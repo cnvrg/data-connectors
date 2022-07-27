@@ -8,7 +8,7 @@ This connector extracts data from SalesForce based on user inputs.
 ## Input
 - `column_list`: It is a list of columns from salesforce that the user wants to pull.
     **Default Value -** <"Contact,Account,Order,Lead">
-- `EntityDefinition_column_list`: List of EntityDefinition columns inside the defined columns by the user.
+- `entity_definition_column_list`: List of EntityDefinition columns inside the defined columns by the user.
     **Default Value -** <"Id,Name,FirstName,LastName">
 - `limit`: Limit for the number of records to be pulled.
     **Default Value -** None
