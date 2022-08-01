@@ -1,0 +1,65 @@
+title: Asana Connector
+version: 1.0.0
+description: Extract data from asana account
+icon: python
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+tags:
+  - training
+
+command: python3 asana_connector.py
+
+requirements:
+  cpu: 2
+  memory: 4
+  gpu: 0
+  hpu: 0
+
+image: cnvrg:v5.0
+
+language: python3
+
+arguments:
+  - key: 'access_token'
+    type: 'categorical'
+    values:
+      - "**************"
+  - key: 'workspace'
+    type: 'categorical'
+    values:
+      - "<your_workspace_name>"
+  - key: 'project'
+    type: 'categorical'
+    values:
+      - "<your_project_name>"
+  - key: 'query'
+    type: 'categorical'
+    values:
+      - "https://app.asana.com/api/1.0/tasks/<your_task_id>"
+  - key: 'task_start_date'
+    type: 'categorical'
+    values:
+      - '"<max_start_date>,<min_start_date>"'
+  - key: 'task_due_date'
+    type: 'categorical'
+    values:
+      - '"<max_due_date>,<min_due_date>"'
+  - key: 'premium_account'
+    type: 'categorical'
+    values:
+      - "No"
+  - key: 'equivalent_columns'
+    type: 'categorical'
+    values:
+      - '"Task-Comment Gid,Task-Comment Created At,Task-Comment Text,Task-Comment Created By,Task-Comment Resource SubType,:,Sub-Task Comment Gid,Sub-Task Comment Created At,Sub-Task Comment Text,Sub-Task Comment Created By,Sub-Task Comment Resource Subtype"'
+  - key: 'separation_columns'
+    type: 'categorical'
+    values:
+      - '"Sub-Task Attachment,Team Name"'
+  - key: 'not_flatten_columns'
+    type: 'categorical'
+    values:
+      - '"Tag-ID, Tag Name"'
+
