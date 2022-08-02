@@ -1,0 +1,5 @@
+cnvrgv2
+html2text
+pandas
+ratelimit
+requests
