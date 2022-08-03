@@ -1,0 +1,26 @@
+title: Monday Connector
+version: 1.0.0
+description: Monday Connector
+icon: python
+
+author: "cnvrg"
+author_email: "libhub@cnvrg.io"
+
+tags:
+  - training
+command: python3 monday_connector.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: cnvrg:v5.0
+language: python3
+
+arguments:
+  - key: apikey
+    type: 'categorical'
+    values:
+       - ''
