@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-This connector extracts data from SalesForce based on user inputs.
+This connector extracts data from Jira based on user inputs.
 
 ## Input
 - `username`: User name of the account. User can set the username in the environment variables with key as USER_NAME
