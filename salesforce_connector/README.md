@@ -1,8 +1,6 @@
 # Pulling data from SalesForce
 ## _cnvrg_
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 This connector extracts data from SalesForce based on user inputs.
 
 ## Input
