@@ -17,7 +17,7 @@ This connector extracts data from SalesForce based on user inputs.
 -	`end_date`: This parameter is used to filter the _createdDate_ field on the basis of _end_date_
     **Default Value -** Current date 
 ## Code Flow
-- User inputs such as: **username**, **password** and  **security_token** needs to be defined in _projects>settings>secrets_ on the cnvrg platform
+- User inputs such as: **username**, **password** and  **security_token** needs to be defined in _projects>settings>environment on the cnvrg platform
 - Bulk queries for pulling data in bulk from salesforce are initiated which pulls the data which is appended to a final dataframe
 - Each iteration calls for the _data_extraction_ function:
     - In data extraction function, an _soql_ query coupled with the _bulk_ query is initiated to pull data from salesforce
