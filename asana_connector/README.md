@@ -1,8 +1,6 @@
 # Asana Connector
 ## _cnvrg_
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 This connector extracts data from Asana accounts, filtering based on user inputs. The Data that is extracted needs further processing to make it suitable for attaching alongside other blueprints, like Churn Prediction or Sentiment Analysis
 
 ## Input
