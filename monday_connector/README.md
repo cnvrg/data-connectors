@@ -1,8 +1,6 @@
 # Pulling data from Monday
 ## _cnvrg_
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 This connector extracts data from Monday.com. We extract all boards and workspaces to which the user has access to and save the results in .csv format. In case the user wants to execute a specific query, they specify it and the results for this query will be saved in .json format.
 
 ## Input
