@@ -33,7 +33,7 @@ arguments:
   - key: 'project'
     type: 'categorical'
     values:
-      - "<your_project_name>"
+      - '"Vendor onboarding"'
   - key: 'query'
     type: 'categorical'
     values:
@@ -61,5 +61,5 @@ arguments:
   - key: 'not_flatten_columns'
     type: 'categorical'
     values:
-      - '"Tag-ID, Tag Name"'
+      - '"Tag ID,Tag Name"'
 
