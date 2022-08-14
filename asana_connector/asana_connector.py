@@ -103,10 +103,10 @@ equiv_cols = args.equivalent_columns
 sep_cols = args.separation_columns
 not_flat = args.not_flatten_columns
 
-if len(os.environ['access_token']) < 20:
-    PAT = access_token
-else:
+if os.environ.get('access_token') == 'True':
     PAT = os.environ['access_token']
+else:
+    PAT = access_token
 
 client = asana.Client.access_token(PAT)
 me = client.users.me()
