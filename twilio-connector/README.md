@@ -1,50 +1,14 @@
-This library is made to download datasets from twilio
+# Parameters
 
-## Finding the dataset name
-To grab a dataset name from twilio, navigate into your desired dataset page on twilio, afterwards copy the dataset name from the end of the url.
-Paste the twilio dataset name into the `twilio_dataset_name` field.
+- `--auth_token` - string, required. API access token for your Twilio workspace. For security reasons, we recommend creating/updating the Cnvrg Secret `TWIL_TOKEN`
+under Project->Settings->Secrets to store the Twilio API token. Enter the value ‘Secret’ if the Cnvrg Secret has been created/updated; otherwise enter the actual API token.
+- `--account_sid` - string, required. Client ID for your Twilio workspace. For security reasons, we recommend creating/updating the Cnvrg Secret `TWIL_SID`
+under Project->Settings->Secrets to store the Twilio Client ID. Enter the value ‘Secret’ if the Cnvrg Secret has been created/updated; otherwise enter the actual Client ID.
+- `--conv_id` - string, required. Conversation ID to be fetched. To find specific conversation ID, refer to [https://www.twilio.com/docs/conversations/api/conversation-resource](https://www.twilio.com/docs/conversations/api/conversation-resource)
+- `--leng_limit` - int, optional. Limits the number of messages messages fetched from the most recent. Default value - ‘None’
+- `--cnvrg_dataset` - string, optional. Name of the cnvrg dataset to store the csv file. Default value - ‘None’
+- `--file_name` - string, optional. Name of the csv file to be generated. Default value - ‘intercom.csv’
 
-## Authentication
+# Authentication
 
-You can get your twilio API credentials by going into the user profile and under "Account" press "Create API Token".
-
-This will download a "twilio.json" file with your credentials.
-
-It is recommended to use environment variables as authentication method. This library expects the following env variables:
-    
-* `TWILIO_KEY` - The twilio API key
-* `TWILIO_USERNAME` - The twilio API username
-
-The environment variables can be stored securely in the project secrets in cnvrg. 
-
-## Conversations
-
-The Twilio conversation will be downloaded in the following json format:
-
-{
-  "sid": "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "chat_service_sid": "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "messaging_service_sid": "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "friendly_name": "My First Conversation",
-  "unique_name": "unique_name",
-  "attributes": {
-    "topic": "feedback"
-  },
-  "date_created": "2015-12-16T22:18:37Z",
-  "date_updated": "2015-12-16T22:18:38Z",
-  "state": "inactive",
-  "timers": {
-    "date_inactive": "2015-12-16T22:19:38Z",
-    "date_closed": "2015-12-16T22:28:38Z"
-  },
-  "bindings": {},
-  "url": "https://conversations.twilio.com/v1/Conversations/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  "links": {
-    "participants": "https://conversations.twilio.com/v1/Conversations/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Participants",
-    "messages": "https://conversations.twilio.com/v1/Conversations/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages",
-    "webhooks": "https://conversations.twilio.com/v1/Conversations/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Webhooks"
-  }
-}
-
-
+This library assumes that the user has an existing Intercom workspace. An API token and client ID can be obtained by creating an app in your workspace. More details on creating an app and authentication can be found [here](https://developers.intercom.com/building-apps/docs/get-started-developing-on-intercom).
