@@ -46,7 +46,7 @@ class Twilio:
         Follows rate limits set by Twilio.
         Args:
             conv_id: string representing unique id for a conversation.
-            leng_limit: limit the number of messages fetched from the beginning
+            leng_limit: limit the number of messages fetched from the most recent
         Returns:
             messages: list of conversation message instances
         """
