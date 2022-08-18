@@ -10,7 +10,8 @@ This connector extracts data from Asana accounts, filtering based on user inputs
     **Default Value -** <your_workspace_name>
 - `project`: project name that the user wants to filter data on.
     **Default Value -** <your_project_name>
--	`query`: If the user wants to write a custom query rather than use default table that comes as output
+-	`query`: If the user wants to write a custom query rather than use default table that comes as output. 
+    _**Note :- If the user wants default data, specify this field as "None"**_
     **Default Value -** https://app.asana.com/api/1.0/tasks/XXXXXXXXXXXXX
 -	`task_start_date`: filter data on the range of dates between which, a task could have started
     **Default Value -** YYYY-MM-DD,Y1Y1Y1Y1-M1M1-D1D1
@@ -24,7 +25,9 @@ This connector extracts data from Asana accounts, filtering based on user inputs
     **Default Value -** Task-Comment Gid,Task-Comment Created At,Task-Comment Text,Task-Comment Created By,Task-Comment Resource SubType,:,Sub-Task Comment Gid,Sub-Task Comment Created At,Sub-Task Comment Text,Sub-Task Comment Created By,Sub-Task Comment Resource Subtype
 -   `not_flatten_columns`: values which don't need to distributed into different columns
     **Default Value -** "Tag-ID, Tag Name"
-    
+
+_**Note :- If the user does not want any subsetting then please specify "None" in the parameters 2-6 (from top)**_
+
 
 ## Code Flow
 - User inputs such as: **access token** needs to be defined in _environment_  tab on the cnvrg platform

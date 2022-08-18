@@ -103,10 +103,10 @@ equiv_cols = args.equivalent_columns
 sep_cols = args.separation_columns
 not_flat = args.not_flatten_columns
 
-if len(os.environ['access_token']) < 20:
-    PAT = access_token
-else:
+if os.environ.get('access_token') == 'True':
     PAT = os.environ['access_token']
+else:
+    PAT = access_token
 
 client = asana.Client.access_token(PAT)
 me = client.users.me()
@@ -287,10 +287,10 @@ if query == 'None':
                 task_frame = pd.concat([task_frame,sub_task_frame])
 
     task_frame1 = task_frame[['Workspace ID','Project ID','Project Name','Task-ID','Task-Name','Task-Assignee ID','Task-Assignee Name','Task-Completed By','Task-Completed At','Task-Custom Field Name','Task-Custom Field Value','Task-Dependencies','Task-Start On','Task-Due On','Task-Tags','Task-Notes','Task-Comment Gid','Task-Comment Created At','Task-Comment Text','Task-Comment Created By','Task-Comment Resource SubType','Task-Attachment','Sub-Task ID','Sub-Task Name','Sub-Task Assignee ID','Sub-Task Assignee Name','Sub-Task Comment Gid','Sub-Task Comment Created At','Sub-Task Comment Text','Sub-Task Comment Created By','Sub-Task Comment Resource Subtype','Sub-Task Completed By','Sub-Task Completed At', 'Sub-Task Custom Field Name','Sub-Task Custom Field Value','Sub-Task Dependencies','Sub-Task Start On','Sub-Task Due On','Sub-Task Notes','Sub-Task Tags','Sub-Task Attachment']]
-    task_frame2 = task_frame1.reset_index()
+    task_frame_updated = task_frame1.reset_index()
     workspace_frame = pd.DataFrame(columns=['Workspace ID','Workspace Name','Team Name'])
 
-    workspace_frame_1 = pd.DataFrame(columns=['Workspace ID','Workspace Tag','Workspace Tag Name'])
+    workspace_frame_updated = pd.DataFrame(columns=['Workspace ID','Workspace Tag','Workspace Tag Name'])
 
     goals_frame = pd.DataFrame(columns = ['Workspace ID','Goal Name','Goal Owner','Goal Due On','Goal Start On','Goal Status','Goal Notes','Goal Metric Currency','Goal Metric Initial','Goal Metric Target', 'Goal Metric Current','Goal Metric Unit'])
     portfolio_frame = pd.DataFrame(columns = ['Workspace ID','Portfolio Created At','Portfolio Created By','Portfolio Custom Field Setting','Portfolio Name'])
@@ -361,9 +361,9 @@ if query == 'None':
         cnt_w = cnt_w + 1
 
         for ii in tag_names:
-            workspace_frame_1.at[cnt_t,'Workspace ID'] = x.split('-')[0]
-            workspace_frame_1.at[cnt_t,'Workspace Tag'] = ii['gid']
-            workspace_frame_1.at[cnt_t,'Workspace Tag Name'] = ii['name']
+            workspace_frame_updated.at[cnt_t,'Workspace ID'] = x.split('-')[0]
+            workspace_frame_updated.at[cnt_t,'Workspace Tag'] = ii['gid']
+            workspace_frame_updated.at[cnt_t,'Workspace Tag Name'] = ii['name']
             cnt_t = cnt_t + 1
     ws_frame = pd.DataFrame(columns=['Project ID','Project Name','Status Update Title','Status Update Text','Status Update Created By','Status Update Created At','Status Update Modified At','Status Type','Sections','Workspace ID','Parent Object'])
     for project in projects:
@@ -406,45 +406,13 @@ if query == 'None':
     ws_frame = ws_frame.reset_index()
 
     ws_frame = ws_frame.merge(workspace_frame, how='inner',on = 'Workspace ID')
-    workspace_frame_1 = workspace_frame_1.merge(workspace_frame, how='inner',on = 'Workspace ID')
+    workspace_frame_updated = workspace_frame_updated.merge(workspace_frame, how='inner',on = 'Workspace ID')
     goals_frame = goals_frame.merge(workspace_frame, how='inner',on = 'Workspace ID')
     portfolio_frame = portfolio_frame.merge(workspace_frame, how='inner',on = 'Workspace ID')
-    task_frame2 = task_frame2.merge(workspace_frame, how='inner',on = 'Workspace ID')
+    task_frame_updated = task_frame_updated.merge(workspace_frame, how='inner',on = 'Workspace ID')
     
     status_update_frame = ws_frame
     status_update_frame = status_update_frame.drop(['index'], axis=1)
-################################### Subsetting based on user info ###############################
-    if workspace_param != ['None']:
-        for workspace_param_1 in workspace_param:
-            status_update_frame = status_update_frame[status_update_frame["Workspace Name"] == workspace_param_1]
-
-    if workspace_param != ['None']:
-        for workspace_param_1 in workspace_param:
-            goals_frame = goals_frame[goals_frame["Workspace Name"] == workspace_param_1]
-
-    if workspace_param != ['None']:
-        for workspace_param_1 in workspace_param:
-            portfolio_frame = portfolio_frame[portfolio_frame["Workspace Name"] == workspace_param_1]
-
-    if workspace_param != ['None']:
-        for workspace_param_1 in workspace_param:
-            task_frame2 = task_frame2[task_frame2["Workspace Name"] == workspace_param_1]
-
-    if project_param != ['None']:
-        for project_param_1 in project_param:
-            status_update_frame = status_update_frame[status_update_frame["Project Name"] == project_param_1]
-
-    if project_param != ['None']:
-        for workspace_param_1 in workspace_param:
-            task_frame2 = task_frame2[task_frame2["Project Name"] == project_param_1]
-
-    if task_due_date != ['None']:
-        for task_due_date_1 in task_due_date:
-            task_frame2 = task_frame2[task_frame2["Task-Due Date"] == task_due_date_1]
-
-    if task_start_date != ['None']:
-        for task_start_date_1 in task_start_date:
-            task_frame2 = task_frame2[task_frame2["Task-Start Date"] == task_start_date_1]
 
     def separating_col_func(data_frame, separation_cols):
         df = 'dataframe_'
@@ -495,11 +463,15 @@ if query == 'None':
         df1['tmp'] = df1.apply(lambda row: list(zip(*(row[x] for x in list_cols))), axis=1)
         df1 = df1.explode('tmp')
         df1['tmp'] = df1['tmp'].fillna("").apply(list)
+        print('check712')
+        print(pd.DataFrame(df1['tmp'].tolist(), index=df1.index))
+        print('check854')
+        print(df1[list_cols])
         df1[list_cols] = pd.DataFrame(df1['tmp'].tolist(), index=df1.index)
         df1.drop(columns='tmp', inplace=True)
         return df1
 
-    def equivalent_col_func(data_frame_2, equivalent_cols):
+    def equivalent_col_func(data_frame_local, equivalent_cols):
         cnti = 0
         for i in equivalent_cols.split(':'):
             if ':' in equivalent_cols:
@@ -509,20 +481,20 @@ if query == 'None':
                 else:
                     list1 = i.split(',')
                     list1.pop(0)
-                data_frame_2 = explode_multiple(data_frame_2,list1)
-                #data_frame_2 = data_frame_2.explode(list1)
+                data_frame_local = explode_multiple(data_frame_local,list1)
+                #data_frame_local = data_frame_local.explode(list1)
             else:
                 list1 = i.split(',')
-                data_frame_2 = explode_multiple(data_frame_2,list1)
-                #data_frame_2 = data_frame_2.explode(list1)
-        return data_frame_2
+                data_frame_local = explode_multiple(data_frame_local,list1)
+                #data_frame_local = data_frame_local.explode(list1)
+        return data_frame_local
 
-    def flattening(data_frame_2,equivalent_cols, not_flattening_cols):
-        for colname, coltype in data_frame_2.dtypes.iteritems():
+    def flattening(data_frame_local,equivalent_cols, not_flattening_cols):
+        for colname, coltype in data_frame_local.dtypes.iteritems():
             if colname not in equivalent_cols.split(',') and colname != 'index' and colname not in not_flattening_cols.split(','):
                 print(colname)
-                data_frame_2 = data_frame_2.explode(colname)
-        return data_frame_2
+                data_frame_local = data_frame_local.explode(colname)
+        return data_frame_local
     
     def intersection_cols(data_frame_3,col_args):
         new_equiv_string = ''
@@ -538,33 +510,33 @@ if query == 'None':
                 new_equiv_string = new_equiv_string[0:(len(new_equiv_string)-1)]
         return new_equiv_string
     
-    workspace_frame_1 = workspace_frame_1.merge(tags_frame,on='Workspace ID')
+    workspace_frame_updated = workspace_frame_updated.merge(tags_frame,on='Workspace ID')
     task_frame.to_csv('task_frame_pre.csv')
-    sep_cols_task = intersection_cols(task_frame2, sep_cols)
+    sep_cols_task = intersection_cols(task_frame_updated, sep_cols)
     if sep_cols_task != '':
-        task_frame2 = separating_col_func(task_frame2, sep_cols_task)
-    equiv_cols_task = intersection_cols(task_frame2, equiv_cols)
+        task_frame_updated = separating_col_func(task_frame_updated, sep_cols_task)
+    equiv_cols_task = intersection_cols(task_frame_updated, equiv_cols)
     if equiv_cols_task != '' and equiv_cols_task != ':':
-        task_frame2 = equivalent_col_func(task_frame2, equiv_cols_task)
-    task_frame2 = flattening(task_frame2, equiv_cols_task, not_flat)
+        task_frame_updated = equivalent_col_func(task_frame_updated, equiv_cols_task)
+    task_frame_updated = flattening(task_frame_updated, equiv_cols_task, not_flat)
 
     status_update_frame.to_csv('status_update_frame_pre.csv')
     sep_cols_tag = intersection_cols(status_update_frame, sep_cols)
     if sep_cols_tag != '':
-        status_update_frame1 = separating_col_func(status_update_frame, sep_cols_tag)
+        status_update_frame_updated = separating_col_func(status_update_frame, sep_cols_tag)
     equiv_cols_tag = intersection_cols(status_update_frame, equiv_cols)
     if equiv_cols_tag != '' and equiv_cols_tag != ':':
-        status_update_frame1 = equivalent_col_func(status_update_frame1, equiv_cols_tag)
-    status_update_frame1 = flattening(status_update_frame1, equiv_cols_tag, not_flat)
+        status_update_frame_updated = equivalent_col_func(status_update_frame_updated, equiv_cols_tag)
+    status_update_frame_updated = flattening(status_update_frame_updated, equiv_cols_tag, not_flat)
 
-    workspace_frame_1.to_csv('workspace_frame_pre.csv')
-    sep_cols_ws = intersection_cols(workspace_frame_1, sep_cols)
+    workspace_frame_updated.to_csv('workspace_frame_pre.csv')
+    sep_cols_ws = intersection_cols(workspace_frame_updated, sep_cols)
     if sep_cols_ws != '':
-        workspace_frame_1 = separating_col_func(workspace_frame_1, sep_cols_ws)
-    equiv_cols_ws = intersection_cols(workspace_frame_1, equiv_cols)
+        workspace_frame_updated = separating_col_func(workspace_frame_updated, sep_cols_ws)
+    equiv_cols_ws = intersection_cols(workspace_frame_updated, equiv_cols)
     if equiv_cols_ws != '' and equiv_cols_ws != ':':
-        workspace_frame_1 = equivalent_col_func(workspace_frame_1, equiv_cols_ws)
-    workspace_frame_1 = flattening(workspace_frame_1, equiv_cols_tag, not_flat)
+        workspace_frame_updated = equivalent_col_func(workspace_frame_updated, equiv_cols_ws)
+    workspace_frame_updated = flattening(workspace_frame_updated, equiv_cols_tag, not_flat)
 
     goals_frame.to_csv('goals_frame_pre.csv')
     sep_cols_goal = intersection_cols(goals_frame, sep_cols)
@@ -584,13 +556,34 @@ if query == 'None':
         portfolio_frame = equivalent_col_func(portfolio_frame, equiv_cols_port)
     portfolio_frame = flattening(portfolio_frame, equiv_cols_port, not_flat)
 
-    task_frame2.to_csv('/cnvrg/task_frame.csv',index=False)
-    status_update_frame1.to_csv('/cnvrg/status_update_frame.csv')
-    workspace_frame_1.to_csv('/cnvrg/workspace_frame.csv',index=False)
-    #project_frame.to_csv('/cnvrg/project_frame.csv',index=False)
+    ################################### Subsetting based on user info ###############################
+    if workspace_param != ['None']:
+        for workspace_param_iter in workspace_param:
+            status_update_frame_updated = status_update_frame_updated[status_update_frame_updated["Workspace Name"] == workspace_param_iter]
+            goals_frame = goals_frame[goals_frame["Workspace Name"] == workspace_param_iter]
+            portfolio_frame = portfolio_frame[portfolio_frame["Workspace Name"] == workspace_param_iter]
+            task_frame_updated = task_frame_updated[task_frame_updated["Workspace Name"] == workspace_param_iter]
+
+    if project_param != ['None']:
+        for project_param_iter in project_param:
+            status_update_frame_updated = status_update_frame_updated[status_update_frame_updated["Project Name"] == project_param_iter]
+            task_frame_updated = task_frame_updated[task_frame_updated["Project Name"] == project_param_iter]
+
+    if task_due_date != ['None']:
+        for task_due_date_iter in task_due_date:
+            task_frame_updated = task_frame_updated[task_frame_updated["Task-Due Date"] == task_due_date_iter]
+
+    if task_start_date != ['None']:
+        for task_start_date_iter in task_start_date:
+            task_frame_updated = task_frame_updated[task_frame_updated["Task-Start Date"] == task_start_date_iter]
+
+    task_frame_updated.to_csv('/cnvrg/task_frame.csv',index=False)
+    status_update_frame_updated.to_csv('/cnvrg/status_update_frame.csv')
+    workspace_frame_updated.to_csv('/cnvrg/workspace_frame.csv',index=False)
     goals_frame.to_csv('/cnvrg/goals_frame.csv',index=False)
     portfolio_frame.to_csv('/cnvrg/portfolio_frame.csv',index=False)
     tags_frame.to_csv('/cnvrg/tags_frame.csv',index=False)
+
 else:
     url = query#'https://app.asana.com/api/1.0/tasks/1202266946298519'
     headers = {'Authorization': "Bearer "+PAT}

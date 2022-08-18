@@ -35,11 +35,11 @@ arguments:
   - key: 'start_date'
     type: 'categorical'
     values:
-       - '"2021-01-01"'
+       - '""'
   - key: 'end_date'
     type: 'categorical'
     values:
-       - '"2021-12-31"'
+       - '""'
   - key: 'extract_all_data'
     type: 'categorical'
     values:
