@@ -5,7 +5,6 @@ The Slack API token of the user and channed id (to pull messages from) are requi
  
 ## Parameters:
 --channel_id - list, required. Channel id to pull messages from. You can get data from multiple channels (eg: ABC< DEF) by specifying them in the following way: --channel_id ABC DEF
-
 To have your credentials secured, we recommend updating the Cnvrg Secret SLACK_CHANNELID under Project->Settings->Secrets to store the SLACK CHANNEL ID. Enter the value 'Secret' if the Cnvrg Secret is present, otherwise enter the actual Channel ID.
 
 --api_token - string, required. API token for Slack account.  To have your credentials secured, we recommend updating the Cnvrg Secret SLACK_APITOKEN under Project->Settings->Secrets to store the SLACK API token. Enter the value 'secret' if the Cnvrg Secret is present, otherwise enter the actual API token.
@@ -20,7 +19,9 @@ To have your credentials secured, we recommend updating the Cnvrg Secret SLACK_C
 
 
 ## Sample command: 
+```
 python main.py --channel_id <channel_ids> --api_token <api_token> 
+```
 
 
 
