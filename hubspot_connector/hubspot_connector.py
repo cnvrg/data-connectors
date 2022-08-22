@@ -91,7 +91,7 @@ if __name__ == '__main__':
         to_object_type = args.to_object_type
         #load apikey from environ variable
         try:
-            key = os.environ['ACCESS_TOKEN']
+            key = os.environ['HUBSPOT_ACCESS_TOKEN']
         except:
             key = access_token
             
