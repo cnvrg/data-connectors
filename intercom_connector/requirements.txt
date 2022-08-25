@@ -1,5 +1,5 @@
-cnvrgv2
-html2text
-pandas
-ratelimit
-requests
+cnvrgv2==1.0.14
+html2text==2020.1.16
+pandas==1.4.2
+ratelimit==2.2.1
+requests==2.23.0

@@ -26,7 +26,7 @@ requirements:
   hpu: 0
 
 # This will replace the "docker_images" argument (?) need to work in cnvrg as well
-image: cnvrg:v5.0
+image: python:3.8
 
 # This will replace "env_setup", currently only python 3 is supported.
 language: python3
