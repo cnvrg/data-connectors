@@ -1,8 +1,5 @@
 ---
-<<<<<<< .merge_file_hFv05c
 
-=======
->>>>>>> .merge_file_uUj6Ni
 title: twilio Dataset Connector # required on creation, a slug will be generated from the title? -> inference-library
 version: 2.0.10 # required
 description: "Download datasets from Twilio" # optional
@@ -31,10 +28,6 @@ requirements:
 
 # This will replace the "docker_images" argument (?) need to work in cnvrg as well
 image: cnvrg:v5.0
-<<<<<<< .merge_file_hFv05c
-=======
-
->>>>>>> .merge_file_uUj6Ni
 # This will replace "env_setup", currently only python 3 is supported.
 language: python3
 
