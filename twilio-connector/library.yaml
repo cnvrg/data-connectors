@@ -1,6 +1,7 @@
 ---
-title: Twilio Dataset Connector # required on creation, a slug will be generated from the title? -> inference-library
-version: 1.1.1 # required
+
+title: twilio Dataset Connector # required on creation, a slug will be generated from the title? -> inference-library
+version: 2.0.10 # required
 description: "Download datasets from Twilio" # optional
 icon: python # optional
 
@@ -26,8 +27,7 @@ requirements:
   hpu: 0
 
 # This will replace the "docker_images" argument (?) need to work in cnvrg as well
-image: python:3.8.10
-
+image: cnvrg:v5.0
 # This will replace "env_setup", currently only python 3 is supported.
 language: python3
 
