@@ -16,7 +16,11 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 def parse_parameters():
     """Command line parser."""
+<<<<<<< .merge_file_QITOx0
     parser = argparse.ArgumentParser(description="""TWilio Connector""")
+=======
+    parser = argparse.ArgumentParser(description="""Twilio Connector""")
+>>>>>>> .merge_file_ZDOeV6
     parser.add_argument('--auth_token', action='store', dest='auth_token', required=True, 
                             help="""--- Twilio API Access Token ---""")
     parser.add_argument('--account_sid', action='store', dest='account_sid', required=True,

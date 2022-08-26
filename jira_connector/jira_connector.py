@@ -37,14 +37,14 @@ if __name__ == '__main__':
         
         username = args.username
         try:
-            username = os.environ['USER_NAME']
+            username = os.environ['JIRA_USER_NAME']
         except:
             username = username
         print('Username = '+username)
         
         api_key = args.api_key
         try:
-            api_key = os.environ['API_KEY']
+            api_key = os.environ['JIRA_API_KEY']
         except:
             api_key = api_key
         print('API Key = '+api_key)

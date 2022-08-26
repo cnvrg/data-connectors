@@ -104,15 +104,15 @@ extract_all_data = args.extract_all_data
 username = args.username
 password = args.password
 try:
-    username = os.environ['USERNAME']
+    username = os.environ['SALESFORCE_USERNAME']
 except BaseException:
     username = args.username
 try:
-    password = os.environ['PASSWORD']
+    password = os.environ['SALESFORCE_PASSWORD']
 except BaseException:
     password = args.password
 try:
-    security_token = os.environ['SECURITY_TOKEN']
+    security_token = os.environ['SALESFORCE_SECURITY_TOKEN']
 except BaseException:
     security_token = args.security_token
 
