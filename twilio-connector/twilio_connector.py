@@ -16,7 +16,7 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 def parse_parameters():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description="""TWilio Connector""")
+    parser = argparse.ArgumentParser(description="""Twilio Connector""")
     parser.add_argument('--auth_token', action='store', dest='auth_token', required=True, 
                             help="""--- Twilio API Access Token ---""")
     parser.add_argument('--account_sid', action='store', dest='account_sid', required=True,
@@ -102,48 +102,15 @@ class Twilio:
         return self.messages
 
 def main():
-    try:
-        args = parse_parameters()
-        if args.auth_token.lower() == 'secret':
-            args.auth_token = os.environ.get('TWIL_TOKEN')
-        if args.account_sid.lower() == 'secret':
-            args.account_sid = os.environ.get('TWIL_SID')
-        twilio = Twilio(args.auth_token, args.account_sid)
-        messages = twilio.get_conversation(args.conv_id, args.leng_limit)
-        messages_map = defaultdict(list)
+    args = parse_parameters()
+    if args.auth_token.lower() == 'secret':
+        args.auth_token = os.environ.get('TWIL_TOKEN')
+    if args.account_sid.lower() == 'secret':
+        args.account_sid = os.environ.get('TWIL_SID')
+    twilio = Twilio(args.auth_token, args.account_sid)
+    messages = twilio.get_conversation(args.conv_id, args.leng_limit)
+    messages_map = defaultdict(list)
 
-<<<<<<< Updated upstream:twilio-connector/twilio_connector.py
-        for msg in messages:
-            messages_map['date_created'].append(msg.date_created)
-            messages_map['author'].append(msg.author)
-            messages_map['body'].append(msg.body)
-
-        df = pd.DataFrame(messages_map)
-        df.dropna(inplace=True)
-
-        df.to_csv(args.local_dir+'/'+args.file_name, index=False)
-
-        for msg in messages:
-            print(msg.date_created)
-            print(msg.author)
-            print(msg.body)
-
-        # Store twilio csv as cnvrg dataset
-        if args.cnvrg_dataset.lower() != 'none':
-            cnvrg = Cnvrg()
-            ds = cnvrg.datasets.get(args.cnvrg_dataset)
-            try:
-                ds.reload()
-            except:
-                print("The provided Dataset was not found")
-                print(f"Creating a new dataset named {args.cnvrg_dataset}")
-                ds = cnvrg.datasets.create(name=args.cnvrg_dataset)
-            print("Uploading files to Cnvrg dataset")
-            os.chdir(args.local_dir)
-            ds.put_files(paths=[args.file_name])
-    except RuntimeError as e:
-        print(e)
-=======
     # for msg in messages:
     #     print(msg.date_created)
     #     print(msg.author)
@@ -171,7 +138,6 @@ def main():
         print("Uploading files to Cnvrg dataset")
         os.chdir(args.local_dir)
         ds.put_files(paths=[args.file_name])
->>>>>>> Stashed changes:twilio-connector/twilio-connector.py
 
 
 if __name__ == '__main__':
