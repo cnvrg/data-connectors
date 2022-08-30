@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The Intercom Connector is a library that utilizes the Intercom API to pull data resources (such as conversation IDs, message IDs, and messages) from an Intercom workspace. The library then feeds the data as input to existing model training and batch predict blueprints. An Intercom workspace, its client ID, and its API access token are required to use this library. The data (from the API) is cleaned and stored in a CSV file.
+The Intercom Connector is a library that utilizes the Intercom API to pull data resources (such as conversation IDs, message IDs, and messages) from an Intercom workspace. The library cleans the data (from the API), stores it as a dataset in CSV format, and then feeds it as input to existing model inference and batch predict blueprints. An Intercom workspace, its client ID, and its API access token are required to use this library.
 
 Click [here](https://github.com/cnvrg/data-connectors/tree/intercom_connector/intercom_connector) for more information on this connector.
 
