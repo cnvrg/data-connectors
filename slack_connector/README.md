@@ -1,27 +1,62 @@
 # Slack Connector
 
-The Slack connector is used to get data from the Slack application which can be fed as an input for other blueprints.
-The Slack API token of the user and channed id (to pull messages from) are required as input - both of which can be obtained from the user's Slack account.
- 
-## Parameters:
---channel_id - list, required. Channel id to pull messages from. You can get data from multiple channels (eg: ABC< DEF) by specifying them in the following way: --channel_id ABC DEF
-To have your credentials secured, we recommend updating the Cnvrg Secret SLACK_CHANNELID under Project->Settings->Secrets to store the SLACK CHANNEL ID. Enter the value 'secret' if the Cnvrg Secret is present, otherwise enter the actual Channel ID.
+This connector pulls data from the Slack application, stores it as a dataset in CSV format, and feeds it as input to existing model inference and batch predict blueprints. A Slack account, its user channel ID, and its user API access token are required to use this library.
 
---api_token - string, required. API token for Slack account.  To have your credentials secured, we recommend updating the Cnvrg Secret SLACK_APITOKEN under Project->Settings->Secrets to store the SLACK API token. Enter the value 'secret' if the Cnvrg Secret is present, otherwise enter the actual API token.
+The following data can be exported from Slack:
 
---file_name - string, optional. Name of the csv file to be generated. Default - ‘slack.csv’
+|Slack Data Item|Slack Data Item|
+|-|-|
+|Channels|App activity logs|
+|Members|Private channels|
+|Direct messages|Folders for every public channel|
+|Group direct messages|Folders for every private channel|
 
+Click [here](https://github.com/cnvrg/data-connectors/tree/slack_connector/slack_connector) for more information on this connector.
 
-## Components:
-- Based on the authentication scopes provided to the token, we can read and write data from Slack. In this case, we are extracting the conversations history using the slack_sdk module. To get the conversations history, the auth token requires the following scopes: channels:history, groups:history, im:history, mpim:history
-- The library stores the output in the form of a csv file with the following headers: type_of_message, text, user, timestamp, subtype
-- The extracted output csv file can be used as an input to other Blueprints for training and inference.
+## Connector Flow
+The following list provides this connector's high-level flow:
+- The user defines inputs such as `api_token` and `channel_id` in cnvrg Projects > Settings > Secrets or provides them as arguments. Refer to the [Sample Command](#sample-command) later in this documentation.
+- The user accesses the Slack API.
+- The Slack connector (with the API token and channel ID passed as environment variables) provides the messages and channels from Slack conversation history and stores them in JSON format.
+- The connector library converts the JSON file into the CSV format to store it as a dataset.
 
+## Inputs
+This library assumes the user has an existing Slack account. The user's Slack API (OAuth) token and channel ID (to pull messages from) are required as input, both of which can be obtained from the user's Slack account. More information can be found [here] (https://slack.dev/python-slack-sdk/installation/index.html).
+The Slack Connector requires the following inputs:
+* `--api_token` − string, required. Provide the API access token from your Slack account.
+* `--channel_id` − string, required. Provide the channel ID(s) from where to pull Slack conversations. Data from multiple channels can be obtained by specifying them, such as: `--channel_id` `channel1 channel2`.
+* `--filename` − string, optional. Set the file name to store the CSV file containing Slack data.
+* `--cnvrg_dataset` − string, optional. Provide the name of the cnvrg dataset.
 
-## Sample command: 
+## Sample command
+Refer to the following sample command:
 ```
-python main.py --channel_id <channel_ids> --api_token <api_token> 
+python main.py --channel_id <channel_ids> --api_token <api_token>
 ```
 
+## Outputs
+The Slack Connector library generates the following outputs:
+* The connector library outputs a CSV file with the following format: `type`, `text`, `user`, `ts`, `client_msg_id`, `subtype`. This following is an example output CSV file:
 
+  |`type`|`text`|`user`|`ts`|`client_msg_id`|`subtype`|
+  |:---|:---|:---|:---|:---|:---|
+  |`message`|`<@U03HJT07NGP>has joined the channel`|`U03HJT07NGP`|`1.66E+09`| |`channel_join`|
+  |`message`|`<@U03NJ5CDHRT> has joined the channel`|`U03NJ5CDHRT`|`1.66E+09`| |`channel_join`|
+  |`message`|`<@U03NZMXFYP3> has joined the channel`|`U03NZMXFYP3`|`1.66E+09`| |`channel_join`|
+
+* The library writes all files created to the default path `/cnvrg`.
+* The user (optionally) stores the output CSV file in a new or existing cnvrg dataset.
+
+## Troubleshooting
+Complete one or more of the following steps to troubleshoot issues that may be encountered with this connector:
+- Confirm the `api_token` and `channel_id` are valid.
+- Confirm the Slack `api_token` has the appropriate scopes (`channels:history, groups:history, im:history, mpim:history`) to access the user converations.
+- Check the experiment's Artifacts section to confirm output CSV files have been generated by this connector.
+
+## Related Blueprint Models
+The Slack Connector can be used with the following blueprints:
+- [Text Summarization Batch](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/text-summarization-batch)
+- [Topic Modeling Inference](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/topic-modelling-inference)
+- [Sentiment Analysis Inference](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/sentiment-analysis-inference)
+- [Virtual Agent Inference](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/virtual-agent-inference)
 
