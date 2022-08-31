@@ -9,7 +9,7 @@ Click [here](https://github.com/cnvrg/data-connectors/tree/intercom_connector/in
 
 ## Connector Flow
 The following list outlines this connector's high-level flow:
-- The user defines inputs such as `api_token` and `client_id` in cnvrg Projects > Settings > Secrets or provides them as arguments. Refer to the [Sample Command](#sample-command) later in this documentation.
+- The user defines inputs such as `api_token` and `client_id` in cnvrg Projects > Settings > Secrets or provides them as arguments. Refer to the [Run Instructions](#run-instructions) later in this documentation.
 - The user provides the `start_date` and `end_date` as input arguments to exchange messages during a specific timeframe. The library pulls *all* messages from your workspace in the absence of start and end dates.
 - The library performs exception handling and prints descriptive error messages in certain situations. For example, it prints an error message if no messages are exchanged during the input timeframe (start and end dates).
 - The library removes HTML syntax and punctuation from the raw text and stores the dataset in CSV format.
@@ -23,8 +23,9 @@ The Intercom Connector requires the following inputs:
 * `--end_date` − string, optional. Set the end date in `mm/dd/yyyy` format for pulling messages exchanged during a certain timeframe. Default value: `None`.
 * `--file_name` − string, optional. Enter a file name to store the CSV file to contain the Intercom data. Default value: `intercom.csv`.
 * `--cnvrg_dataset` − string, optional. Provide a name of cnvrg dataset to store the CSV file. Default value: `None`.
-## Sample Command
-Refer to the following sample command:
+
+## Run Instructions
+Refer to the following sample command to run the connector code:
 
 ```bash
 python intercom_connector.py --api_token <api_token> --client_id <client_id> --start_date 04/28/2022 --end_date 06/28/2022
