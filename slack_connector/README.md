@@ -15,7 +15,7 @@ Click [here](https://github.com/cnvrg/data-connectors/tree/slack_connector/slack
 
 ## Connector Flow
 The following list provides this connector's high-level flow:
-- The user defines inputs such as `api_token` and `channel_id` in cnvrg Projects > Settings > Secrets or provides them as arguments. Refer to the [Sample Command](#sample-command) later in this documentation.
+- The user defines inputs such as `api_token` and `channel_id` in cnvrg Projects > Settings > Secrets or provides them as arguments. Refer to the [Run Instructions](#run-instructions) later in this documentation.
 - The user accesses the Slack API.
 - The Slack connector (with the API token and channel ID passed as environment variables) provides the messages and channels from Slack conversation history and stores them in JSON format.
 - The connector library converts the JSON file into the CSV format to store it as a dataset.
@@ -28,8 +28,8 @@ The Slack Connector requires the following inputs:
 * `--filename` − string, optional. Set the file name to store the CSV file containing Slack data.
 * `--cnvrg_dataset` − string, optional. Provide the name of the cnvrg dataset.
 
-## Sample command
-Refer to the following sample command:
+## Run Instructions
+Refer to the following sample command to run the connector code:
 ```
 python main.py --channel_id <channel_ids> --api_token <api_token>
 ```
