@@ -23,10 +23,10 @@ The following list provides this connector's high-level flow:
 ## Inputs
 This library assumes the user has an existing Slack account. The user's Slack API (OAuth) token and channel ID (to pull messages from) are required as input, both of which can be obtained from the user's Slack account. More information can be found [here] (https://slack.dev/python-slack-sdk/installation/index.html).
 The Slack Connector requires the following inputs:
-* `--api_token` − string, required. Provide the API access token from your Slack account.
+* `--api_token` − string, required. Provide the API access token from your Slack account. For security reasons, cnvrg recommends creating/updating the cnvrg Secret. Select **Projects** > **Settings** > **Secrets** to store the Slack API token. Enter the **Value** `Secret` if the cnvrg Secret has been created/updated; otherwise enter the actual API token.
 * `--channel_id` − string, required. Provide the channel ID(s) from where to pull Slack conversations. Data from multiple channels can be obtained by specifying them, such as: `--channel_id` `channel1 channel2`.
-* `--filename` − string, optional. Set the file name to store the CSV file containing Slack data.
-* `--cnvrg_dataset` − string, optional. Provide the name of the cnvrg dataset.
+* `--file_name` − string, optional. Set the file name to store the CSV file containing Slack data. Default value: `slack.csv`.
+* `--cnvrg_dataset` − string, optional. Provide the name of the cnvrg dataset. Default value: `None`.
 
 ## Run Instructions
 Refer to the following sample command to run the connector code:
