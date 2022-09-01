@@ -2,7 +2,7 @@ import os
 import argparse
 import pandas as pd
 from collections import defaultdict
-from cnvrgv2 import Cnvrg
+# from cnvrgv2 import Cnvrg
 import influxdb_client, os, time
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -53,14 +53,16 @@ def main():
     if args.url.lower() == 'secret':
         args.url = os.environ.get('INFLUXDB_URL')
     if args.org.lower() == 'secret':
-        args.url = os.environ.get('INFLUXDB_ORG')
+        args.org = os.environ.get('INFLUXDB_ORG')
     if args.bucket.lower() == 'secret':
-        args.url = os.environ.get('INFLUXDB_BUCKET')
+        args.bucket = os.environ.get('INFLUXDB_BUCKET')
 
     client = influxdb_client.InfluxDBClient(url=args.url, token=args.token, org=args.org)
     query_api = client.query_api()
-
-    query = 'from(bucket: "' + args.bucket + '")\n |> range(start:' + args.range_start + ')'
+    if args.range_start.lower() != 'none':
+        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:' + args.range_start + ')'
+    else:
+        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:2020-01-01T00:00:00Z)'
     tables = query_api.query(query, org=args.org)
     table_map = defaultdict(list)
 

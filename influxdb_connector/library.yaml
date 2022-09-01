@@ -1,7 +1,7 @@
 ---
 
 title: influxdb Dataset Connector # required on creation, a slug will be generated from the title? -> inference-library
-version: 1.0.0 # required
+version: 1.0.3 # required
 description: "Download datasets from influxdb" # optional
 icon: python # optional
 
