@@ -15,7 +15,7 @@ The following list outlines this connector's high-level flow:
 - The library removes HTML syntax and punctuation from the raw text and stores the dataset in CSV format.
 
 ## Inputs
-This library assumes that the user has an existing Intercom workspace. The user's Intercom API token and client ID are required as input, both of which can be obtained by creating an application (app) in your workspace. More details on creating an app and authentication can be found [here](https://developers.intercom.com/building-apps/docs/get-started-developing-on-intercom).
+This library assumes that the user has an existing Intercom workspace. The user's Intercom API token and client ID are required as input, both of which can be obtained by creating an app in your workspace. More details on creating an app and authentication can be found [here](https://developers.intercom.com/building-apps/docs/get-started-developing-on-intercom).
 The Intercom Connector requires the following inputs:
 * `--api_token` −  string, required. Provide the API Access Token of your Intercom workspace. For security reasons, cnvrg recommends creating/updating the cnvrg Secret `INT_APITOKEN`. Select **Projects** > **Settings** > **Secrets** to store the Intercom API Access Token. Enter the **Value** `Secret` if the cnvrg Secret has been created/updated; otherwise enter the actual API Access Token.
 * `--client_id` − string, required. Provide the Client ID for your Intercom workspace. For security reasons, cnvrg recommends creating/updating the cnvrg Secret `INT_CLIENTID`. Select **Projects** > **Settings** > **Secrets** to store the Intercom Client ID. Enter the **Value** `Secret` if the cnvrg Secret has been created/updated; otherwise enter the actual Client ID.
