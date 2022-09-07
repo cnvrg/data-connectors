@@ -8,21 +8,27 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
-
+url = "https://us-east-1-1.aws.cloud2.influxdata.com"
+org =  "kris.pan@cnvrg.io"
+token = "I8idv5QMDs0IbuOU2vnxOljNNGU1bl_dvUYSLxkDFLugeerxB5NqGYHbh0uWSrdEV6g2PjGBGISm_0-n7_OL1A=="
+bucket = "anomaly_detection"
 # writing data to influxdb api
-'''
-write_api = client.write_api(write_options=SYNCHRONOUS)
-for value in range(5):
-  point = (
-    Point("measurement1")
-    .tag("tagname1", "tagvalue1")
-    .field("field1", value)
-  )
-  write_api.write(bucket=bucket, org="kris.pan@cnvrg.io", record=point)
-  time.sleep(1) # separate points by 1 second
-'''
+client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
+
+df = pd.read_csv("github/data-connectors/influxdb_connector/influxdb_test.csv")
+print(df)
+# write_api = client.write_api(write_options=SYNCHRONOUS)
+# for value in range(5):
+#   point = (
+#     Point("measurement1")
+#     .tag("tagname1", "tagvalue1")
+#     .field("field1", value)
+#   )
+#   write_api.write(bucket=bucket, org="kris.pan@cnvrg.io", record=point)
+#   time.sleep(1) # separate points by 1 second
 
 
+'''
 def parse_parameters():
     """Command line parser."""
     parser = argparse.ArgumentParser(description="""influxdb Connector""")
@@ -56,9 +62,11 @@ def main():
         args.org = os.environ.get('INFLUXDB_ORG')
     if args.bucket.lower() == 'secret':
         args.bucket = os.environ.get('INFLUXDB_BUCKET')
-
+    
+    # TODO conncetion unit test
     client = influxdb_client.InfluxDBClient(url=args.url, token=args.token, org=args.org)
     query_api = client.query_api()
+    # TODO validate bucket and range 
     if args.range_start.lower() != 'none':
         query = 'from(bucket: "' + args.bucket + '")\n |> range(start:' + args.range_start + ')'
     else:
@@ -67,10 +75,13 @@ def main():
     table_map = defaultdict(list)
 
     for table in tables:
+        # TODO parse all columns
         for record in table.records:
-            table_map['time'].append(record['_time'])
-            table_map['measurement'].append(record['_measurement'])
-            table_map['value'].append(record['tagname1'])
+            for key, value in record.items():
+            # table_map['time'].append(record['_time'])
+            # table_map['measurement'].append(record['_measurement'])
+            # table_map['value'].append(record['tagname1'])
+                table_map[key].append(value)
     df = pd.DataFrame(table_map)
     df.dropna(inplace=True)
     df.to_csv(args.local_dir+'/'+args.file_name, index=False)
@@ -92,4 +103,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-
+'''
