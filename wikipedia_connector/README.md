@@ -1,34 +1,63 @@
 # Wikipedia Connector (Library)
-Wikipedia connector is a library that creates a connection to wikipedia from your system and extracts the text from any article without any special characters and tags, in the form of a csv file.
-## Input Arguments
-- `topics`: It is a list of topics that the user wants to extract from wikipedia. It can be in either a comma separated text, or present as rows in a tabluar format in a csv file whose name can be given in this argument
-    **Default Value -** <"Topza,Gun,Republic,Donald"
-    **Default Value -** <"/data/dataset_name/input_file.csv"
-## Features
-- input format is flexible, as it can be provided as a text or in a tabluar format or even as a list of columns in a table
-- some topics are ambigious in the sense that a search for that particular keyword doesn't yield any specific page. In that case, the first 5 of the disambiguation page values are circled through one by one
-- HTML tags, non-english words and other unncessary punctuation is removed leaving just English words
-- the text is outputted in a csv format
+The Wikipedia Connector is a library that creates a connection from your system to Wikipedia, obtains article data (i.e., Wikimedia data dumps), extracts the article text in a CSV file without any special characters and tags, and feeds it as input to existing model training and inference blueprints. No special prerequisites (such as an account) are required to use this library.
+Click [here](https://github.com/cnvrg/data-connectors/tree/wikipedia_connector/wikipedia_connector) for more information on this connector.
 
-## Model Artifacts
-- `--wiki_output.csv` output file which contains the text in the following format
-text 	title 
+## Connector Flow
+The following list provides this connector’s high-level flow:
+- The user provides a list of topics or a URL link for the connector to extract Wikipedia article data.
+  ::: tip NOTE
+  Some topics are ambiguous, so a search for a particular keyword doesn't yield a specific Wikipedia page. In this case, the first five disambiguation page values are circled through one-by-one.
+  :::
+- The connector cleans the extracted article data, removing HTML tags, special characters, and unnecessary punctuation.
+- The connector outputs the data into flattened CSV table(s) with the following simple format: `text, title`.
 
-| text           | title  |
-|--------------------|-------------------------|
-| Predation is a biological interaction where one organism, the predator, kills and eats another organism, its prey. It is one of a family of common feeding behaviours that includ | predator     |
-| Halo is a military science fiction video game and media franchise created by Bungie. The franchise is currently managed and developed by 343 Industries, and owned and published by Xbox Game Studios.| halo    |
+## Inputs
+This connector library’s input format is flexible. It can be provided as text, in tabular format as a CSV file, or with a URL link.
+The Wikipedia Connector requires the following inputs:
+- Input: `topics` – Provide a list of topics to extract from Wikipedia.
+- Format: CS text or CSV file –  Format the input either in comma separated (CS) text or as rows in a CSV file with its name given in the argument:
+  - CS text default value: ` cat,dog,water,bonsai`
+  - CSV file default value: `/data/dataset_name/input_file.csv`
+- Alternative input format – Provide the URL link to the input data, such as: https://en.wikipedia.org/wiki/Age_of_Wonders or https://en.wikipedia.org/wiki/Epic_Games
 
-## How to run
+## Run Instructions
+Refer to the following sample command to run the connector code:
 ```
-python3 wiki/training/wiki.py --topics "predator,zaineb,knuckles,dust" 
+python3 wiki/training/wiki.py --topics "predator,zaineb,knuckles,dust"
 ```
+
+## Outputs
+The Wikipedia Connector library generates the following outputs:
+- The connector library outputs a `--wiki_output.csv` file with the following format: `text, title`.
+  This following table is an example output CSV file:
+  | text | title |
+  | --- | --- |
+  |Predation is a biological interaction where one organism, the predator, kills and eats another organism, its prey. It is one of a family of common feeding behaviors that includes parasitism and micropredation and parasitoidism. | predator |
+  |Halo is a military science fiction video game and media franchise created by Bungie. The franchise is currently managed and developed by 343 Industries, and owned and published by Xbox Game Studios. | halo |
+  
+- The library writes all files created to the default path `/cnvrg`.
+- The user (optionally) stores the output CSV file in a new or existing cnvrg dataset.
+
+## Troubleshooting
+Complete one or more of the following steps to troubleshoot issues that may be encountered with this connector:
+- Confirm the ‘topics’ are valid and input formatting is correct.
+- Check the Experiments > Artifacts section to confirm output CSV files have been generated by this connector.
+
+## Related Blueprints
+The Wikipedia Connector can be used with the following blueprints:
+- [Topic Modeling Train](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/topic-modelling-training)
+- [Topic Modeling Inference](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/topic-modelling-inference)
+- [QnA Training](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/qna-training)
+- [QnA Inference](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/qna-inference)
+- [Text Summarization Training](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/text-summarization-train)
+- [Text Summarization Inference](https://metacloud.staging-cloud.cnvrg.io/marketplace/blueprints/text-summarization-inference)
+
 ### Techniques/Libraries Used
 [Beautiful Soup](https://beautiful-soup-4.readthedocs.io/en/latest/)
-Beautiful Soup is a Python library for pulling data out of HTML and XML files. It works with your favorite parser to provide idiomatic ways of navigating, searching, and modifying the parse tree. It commonly saves programmers hours or days of work.
+Beautiful Soup is a Python library for pulling data from HTML and XML files. It works with your favorite parser to provide idiomatic ways of navigating, searching, and modifying the parse tree. It commonly saves programmers hours or days of work.
 [Regular Expressions](https://www.w3schools.com/python/python_regex.asp)
-A RegEx, or Regular Expression, is a sequence of characters that forms a search pattern.
+A Regular Expression, or a RegEx, is a sequence of characters that forms a search pattern.
 RegEx can be used to check if a string contains the specified search pattern.
 [Wikipedia](https://pypi.org/project/wikipedia/)
-Wikipedia is a Python library that makes it easy to access and parse data from Wikipedia.
-Search Wikipedia, get article summaries, get data like links and images from a page, and more. Wikipedia wraps the MediaWiki API so you can focus on using Wikipedia data, not getting it.
+Wikipedia is a Python library that simplifies access and data parsing from Wikipedia.
+Search Wikipedia, obtain article summaries, access data like links and images from a page, among other activities. Wikipedia wraps the MediaWiki API so users can focus on using Wikipedia data, not accessing it.
