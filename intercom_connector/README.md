@@ -5,7 +5,7 @@
 
 The Intercom Connector is a library that utilizes the Intercom API to pull data resources (such as conversation IDs, message IDs, and messages) from an Intercom workspace. The library cleans the data (from the API), stores it as a dataset in CSV format, and then feeds it as input to existing model inference and batch predict blueprints. An Intercom workspace, its client ID, and its API access token are required to use this library.
 
-Click [here](https://github.com/cnvrg/data-connectors/tree/intercom_connector/intercom_connector) for more information on this connector.
+Click [here](https://github.com/cnvrg/data-connectors/tree/master/intercom_connector) for more information on this connector.
 
 ## Connector Flow
 The following list outlines this connector's high-level flow:
