@@ -15,6 +15,26 @@ TIME_PERIOD = 10
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 
+class NoneMessageError(Exception):
+    """Raise if message is None object"""
+    pass
+
+
+class InvalidDatesError(Exception):
+    """Raise when date format entered is incorrect or invalid"""
+    pass
+
+
+class TimeStampError(Exception):
+    """Raise if start time stamp is greater than end timestamp"""
+    pass
+
+
+class NoMessagesError(Exception):
+    """Raise when no messages are found in the given timeframe"""
+    pass
+
+
 def parse_parameters():
     """Command line parser."""
     parser = argparse.ArgumentParser(description="""Intercom Connector""")
@@ -44,12 +64,14 @@ def clean_message(msg, html2text_obj):
         msg: A string representing raw message text.
         html2text_obj: An html2text.HTML2Text instance
 
+    Raises:
+        NoneMessageError: If message is a None object
+
     Returns:
         A string representing the processed/cleaned message text
     """
-    assert (
-        msg is not None
-    ), "The input string cannot be None. Please pass a valid input."
+    if msg is None:
+        raise NoneMessageError("The input string cannot be None. Please pass a valid input.")
 
     output = html2text_obj.handle(msg).strip()
     output = output.replace('\n', '')
@@ -157,18 +179,15 @@ class Intercom:
             end_date: A string representing the end_date in mm/dd/yyyy format for pulling messages in a certain timeframe
 
         Raises:
-            AssertionError: If one of the dates is missing.
-            AssertionError: If start timestamp is greater than end timestamp
-            AssertionError: If no messages were exchanged during the given timeframe
+            InvalidDatesError: If one of the dates is missing.
+            TimeStampError: If start timestamp is greater than end timestamp
+            NoMessagesError: If no messages were exchanged during the given timeframe
 
         Returns:
             message_data: a dictionary of lists containing strings representing data headers such as conversation id, message id, timestamp, date and message text 
         """
-        # Check dates and convert dates to unix timestamps if applicable
-        assert (
-            (start_date == 'None' and end_date == 'None') or
-            (start_date != 'None' and end_date != 'None')
-        ), "Either the start date or end date is missing. Both dates are required to pull messages during a certain timeframe."
+        if not ((start_date == 'None' and end_date == 'None') or (start_date != 'None' and end_date != 'None')):
+            raise InvalidDatesError("Either the start date or end date is missing. Both dates are required to pull messages during a certain timeframe.")
 
         is_timeframe = (start_date != 'None' and end_date != 'None')
 
@@ -178,9 +197,8 @@ class Intercom:
             start_ts = datetime.timestamp(start_format)
             end_ts = datetime.timestamp(end_format)
 
-            assert (
-                end_ts >= start_ts
-            ), "End timestamp should be greater than start timestamp. Check your start and end dates."
+            if start_ts > end_ts:
+                raise TimeStampError("End timestamp should be greater than start timestamp. Check your start and end dates.")
 
         # Make API calls to pull messages from Intercom workspace using pagination and rate limiting
         message_data = {}
@@ -230,9 +248,8 @@ class Intercom:
             next_page = result["pages"]["next"]
             result = self.get_next_page_conversations(next_page)
 
-        assert(
-            len(message_data["message_text"]) != 0
-        ), "No messages found in the given timeframe. Please enter different start and end dates."
+        if len(message_data["message_text"]) == 0:
+            raise NoMessagesError("No messages found in the given timeframe. Please enter different start and end dates.")
 
         return message_data
     
