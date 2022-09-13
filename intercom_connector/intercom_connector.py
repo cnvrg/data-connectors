@@ -17,22 +17,44 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 class NoneMessageError(Exception):
     """Raise if message is None object"""
-    pass
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "NoneMessageError: html2text cannot clean up None objects. Please ensure the input string is valid!"
 
 
 class InvalidDatesError(Exception):
     """Raise when date format entered is incorrect or invalid"""
-    pass
+    def __init__(self, start_date, end_date):
+        super().__init__(start_date, end_date)
+        self.start_date = start_date
+        self.end_date = end_date
+
+    def __str__(self):
+        return f'InvalidDatesError: Your start date is {self.start_date} and end date is {self.end_date}. Either the start date or end date is missing. Both dates are required to pull messages during a certain timeframe!'
 
 
 class TimeStampError(Exception):
     """Raise if start time stamp is greater than end timestamp"""
-    pass
+    def __init__(self, start_ts, end_ts):
+        super().__init__(start_ts, end_ts)
+        self.start_ts = start_ts
+        self.end_ts = end_ts
+
+    def __str__(self):
+        return f'TimeStampError: End timestamp ({self.start_ts}) should be greater than start timestamp ({self.end_ts}). Check your start and end dates!'
 
 
 class NoMessagesError(Exception):
     """Raise when no messages are found in the given timeframe"""
-    pass
+    def __init__(self, start_date, end_date):
+        super().__init__(start_date, end_date)
+        self.start_date = start_date
+        self.end_date = end_date
+
+    def __str__(self):
+        return f'NoMessagesError: No messages found between {self.start_date} and {self.end_date}. Please enter different start and end dates!'
 
 
 def parse_parameters():
@@ -70,8 +92,9 @@ def clean_message(msg, html2text_obj):
     Returns:
         A string representing the processed/cleaned message text
     """
+    msg = None
     if msg is None:
-        raise NoneMessageError("The input string cannot be None. Please pass a valid input.")
+        raise NoneMessageError()
 
     output = html2text_obj.handle(msg).strip()
     output = output.replace('\n', '')
@@ -187,7 +210,7 @@ class Intercom:
             message_data: a dictionary of lists containing strings representing data headers such as conversation id, message id, timestamp, date and message text 
         """
         if not ((start_date == 'None' and end_date == 'None') or (start_date != 'None' and end_date != 'None')):
-            raise InvalidDatesError("Either the start date or end date is missing. Both dates are required to pull messages during a certain timeframe.")
+            raise InvalidDatesError(start_date, end_date)
 
         is_timeframe = (start_date != 'None' and end_date != 'None')
 
@@ -198,7 +221,7 @@ class Intercom:
             end_ts = datetime.timestamp(end_format)
 
             if start_ts > end_ts:
-                raise TimeStampError("End timestamp should be greater than start timestamp. Check your start and end dates.")
+                raise TimeStampError(start_ts, end_ts)
 
         # Make API calls to pull messages from Intercom workspace using pagination and rate limiting
         message_data = {}
@@ -249,7 +272,7 @@ class Intercom:
             result = self.get_next_page_conversations(next_page)
 
         if len(message_data["message_text"]) == 0:
-            raise NoMessagesError("No messages found in the given timeframe. Please enter different start and end dates.")
+            raise NoMessagesError(start_date, end_date)
 
         return message_data
     
