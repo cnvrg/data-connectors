@@ -9,6 +9,27 @@ from cnvrgv2 import Cnvrg
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
+
+class NoMessageError(Exception):
+    """Raise if no messages are obtained"""
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "NoMessageError: No messages obtained from this channel. Please ensure that channel contains messages."
+
+
+class HeadersMismatchError(Exception):
+    """Raise if headers are not in correct format"""
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "HeadersMismatchError: Required headers not obtained from messages dictionary. Please ensure data is in correct format."
+
+
+
+
 def get_parameters():
     
     parser = argparse.ArgumentParser(description="Slack Connector")
@@ -23,6 +44,7 @@ def get_parameters():
                             help="""--- the name of the cnvrg dataset to store in ---""")
     parser.add_argument('--file_name', action='store', dest='file_name', required=False, default="slack.csv", 
                             help="""--- name of the dataset csv file ---""")
+    
     return parser.parse_args()
 
 
@@ -30,16 +52,17 @@ def get_parameters():
 
 def get_messages(api_token,channel_id):
         
-        """Pulls messages from a Slack channel using input api token and uniqe channel id
+        
+        """Pulls messages from a Slack channel using input api token and unique channel id
         
     Makes an API call to get messages from Slack
 
     Args:
             api_token: string representing unique authentication token from user
-            channel_id: string format of unique channel ID
+            channel_id: unique channel ID in string format
 
     Returns:
-            conversation_history: conversation metadata in json format
+            conversation_history: conversation metadata as dataframe
         """
         
         client = WebClient(token=api_token)
@@ -51,14 +74,19 @@ def get_messages(api_token,channel_id):
 
             try:
 
-                result = client.conversations_history(channel=c)
+                result = client.conversations_history(channel = c)
                 conversation_history = result["messages"]
                 df_conversation_history = pd.DataFrame(conversation_history)
+
+                if df_conversation_history.empty == True:
+                    raise NoMessageError()
+
                 df.append(df_conversation_history)
             
             except SlackApiError as e:
             
                 logger.error("Error creating conversation list: {}".format(e))
+        
 
         df = pd.concat(df)
         
@@ -78,9 +106,23 @@ def filter_data(df):
         A dataframe with processed columns
     """
 
+    # Filter dataframe to keep required columns
     df = df[['type','text','user','ts','client_msg_id','subtype']]
-    #df.to_csv('slack.csv')
-    #df.to_csv(args.local_dir+'/'+args.file_name, index=False)
+
+    # Raise error if datframe is empty
+    if df.empty == True:
+        raise NoMessageError()
+
+    list1 = list(df.columns)
+    list2 = ['type','text','user','ts','client_msg_id','subtype']
+    difference_set = set(list1)-set(list2)
+
+    # Raise error if all required headers are not imported
+    if difference_set != set():
+            raise HeadersMismatchError()
+    
+ 
+
     return df
 
 
@@ -96,7 +138,7 @@ def main():
     if args.channel_id == 'secret':
         args.channel_id = os.environ.get('SLACK_CHANNELID')
 
-
+    
     # Pull messages from Slack channel 
     messages_dict = get_messages(args.api_token,args.channel_id)
 
@@ -106,6 +148,7 @@ def main():
     # Filter data
     df = filter_data(df)
     
+    # Create csv file
     df.to_csv(args.local_dir+'/'+args.file_name, index=False)
     
          
