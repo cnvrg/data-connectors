@@ -1,41 +1,45 @@
-# Pulling data from hubspot
-## _cnvrg_
+# HubSpot Connector (Library)
+The HubSpot Connector is a library that utilizes the HubSpot API to extract customer data based on user inputs. The library then stores this data as a CSV file and provides it as input to existing training and inference blueprints. A HubSpot account and its security access token are required to use this library.
 
-This connector extracts data from hubspot based on user inputs.
+Click [here](https://github.com/cnvrg/data-connectors/tree/master/hubspot_connector) for more information on this connector.
 
-## Input
-- `object_list`: It is a list of objects from hubspot that the user wants to pull.
-    **Default Value -** <"deals,Companies,contacts,Feedback_submissions,Line_items,products,tickets,quotes,calls,emails,meetings,notes.tasks">
-- `access_token`: List of EntityDefinition columns inside the defined columns by the user.
-    **Default Value -** cnvrg connector app token
-- `count`: Limit for the number of records to be pulled.
-    **Default Value -** 500
-- `association_id_list`: list of id's to be assiciated.
-    **Default Value -** None
-- `object_type`: Object to be associated.
-    **Default Value -** None
-- `to_object_type`: Object to be associated with.
-    **Default Value -** None
-## Code Flow
-- User inputs such as: **access_token** needs to be defined in _projects>settings>secrets_ on the cnvrg platform.
-- Bulk queries for pulling data in bulk from hubspot are initiated which pulls the data which is appended to multiple dataframes according to their objects.
-- Each iteration hits object specific api in the user defined app:
-    - user needs to create an app to access objects and generate an api.
-    - to create an app follow integrations -> Private Apps -> Create a private app -> Scopes -> CRM -> check the objects you want to fetch -> generate api
-    - copy the generated api and provide it as an argument for access_token.
-- Each iteration calls the api and fetches data for the objects specified in the list.
-- Seperate dataframes as csv for each objects is created.
+## Connector Flow
+The following list provides this connector's high-level flow:
+- The user defines inputs such as `access_token` in cnvrg Projects > Settings > Secrets.
+- The connector initiates bulk queries for HubSpot, which pulls the data in bulk and appends it to multiple DataFrames according to their objects.
+- The connector performs each iteration, which accesses the object-specific API in the user-defined app:
+  - The user creates an app to access objects and generate an API by using the following flow: Private Apps > Create a private app > Scopes > CRM > Select the desired objects > Generate API.
+  - The user copies the generated API and provides it as a `access_token` argument.
+- The user (optionally) joins multiple tables according to requirements based on associations.
+- The connector performs each iteration, calling the API and fetching data for the objects specified in the list.
+- The connector creates separate DataFrames as a CSV file for each object.
 
-## Joining Tables
-- User can join multiple tables according to their requirement based on associations.
+## Inputs
+This library assumes the user has an existing HubSpot account. The user's HubSpot `access_token` (to pull data from) is required as input, which can be obtained from the user's HubSpot account.
+The HubSpot Connector requires the following inputs:
+- `access_token` - Provide the access token of your HubSpot account. For security reasons, cnvrg recommends creating/updating the cnvrg Secret `????_TOKEN`. Select **Projects** > **Settings** > **Secrets** to store the HubSpot access token.
+- `object_list` - Provide a list of objects from HubSpot to pull. Default Value: `deals,companies,contacts,feedback_submissions,line_items,products,tickets,quotes,calls,emails,meetings,notes,tasks`.
+`--EntityDefinition_column_list` − Provide a list of the `EntityDefinition` columns inside the user-defined columns. Default Value: `Id,Name,FirstName,LastName`.
+- `count`- Set the limit for the number of records to be pulled. Default Value: `500`.
+- `association_id_list`: Provide a list of IDs to be associated. Default Value: `None`.
+- `object_type` - Set the object to be associated. Default Value: `None`.
+- `to_object_type`- Set an object to be associated with. Default Value: `None`.
+
+## Run Instructions
+The code requires [Python 3](https://www.python.org/) installed on your system to run.
 
 ## Output
--   Data from multiple objects is saved in object named dataframes `{object}.csv`
--   Data from associated objects is saved in dataframe names `ObjectType_toObjectType.csv`
+- The connector outputs data from multiple objects and saves it in object-named DataFrames `{object}.csv`
+- The connector outputs data from associated objects and saves in the following DataFrame name `ObjectType_toObjectType.csv`
 
-## Error Handling
--   In case the code is ran successfully, the status and the logs can be checked in the experiment tab. 
--   The code prints the job status simultaneously for each task completed:
-    - when the data is pulled.
-    - when the job is completed.
--  In case of an error, the experiment fails, the code gets into debug mode and the logs display the error msg.
+## Troubleshooting
+Complete one or more of the following steps to troubleshoot issues that may be encountered with this connector:
+- Confirm the `access_token` is valid.
+- Check the job status, which cnvrg displays simultaneously for each task completed: when the data is pulled and when the job is completed.
+- Check the Experiments > Artifacts section to confirm output CSV files have been generated by this connector.
+- Check the logs (in the Experiments tab) for an error message. If the experiment fails, an error code displays and cnvrg enters Debug mode, which allows limited time to review the logs and resolve the problem.
+
+## Related Blueprints
+The HubSpot Connector can be used with the following blueprints:
+- [Churn Detection Train](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/churn-detection-train)
+- [Churn Detection Inference](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/churn-detection-inference)
