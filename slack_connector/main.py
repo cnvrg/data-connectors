@@ -7,6 +7,8 @@ from slack_sdk.errors import SlackApiError
 from cnvrgv2 import Cnvrg
 
 
+
+#cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "C:/Users/svelanka/Downloads/Blueprints/slack_connector/slack_connector/")
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 
@@ -76,16 +78,27 @@ def get_messages(api_token,channel_id):
 
                 result = client.conversations_history(channel = c)
                 conversation_history = result["messages"]
-                df_conversation_history = pd.DataFrame(conversation_history)
+                
 
-                if df_conversation_history.empty == True:
+                if conversation_history.empty == True:
                     raise NoMessageError()
 
+                df_conversation_history = pd.DataFrame(conversation_history)
                 df.append(df_conversation_history)
             
             except SlackApiError as e:
+
+                if e.response.data.get("error", "") == "not_in_channel":
+               
+                    logger.warning('Attempted to get messages for channel: {} that '
+                    'user is not in'.format(c))
+
+                    conversation_history = None
             
-                logger.error("Error creating conversation list: {}".format(e))
+                else:
+                    raise e
+            
+                #logger.error("Error creating conversation list: {}".format(e))
         
 
         df = pd.concat(df)
@@ -117,7 +130,7 @@ def filter_data(df):
     list2 = ['type','text','user','ts','client_msg_id','subtype']
     difference_set = set(list1)-set(list2)
 
-    # Raise error if all required headers are not imported
+    # Raise error if all required headers are imported
     if difference_set != set():
             raise HeadersMismatchError()
     
@@ -171,4 +184,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-
+        
