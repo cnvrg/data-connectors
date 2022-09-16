@@ -96,10 +96,10 @@ def get_messages(api_token,channel_id):
                     conversation_history = None
             
                 else:
+                    logger.error("Error creating conversation list: {}".format(e))
                     raise e
             
-                #logger.error("Error creating conversation list: {}".format(e))
-        
+                        
 
         df = pd.concat(df)
         
