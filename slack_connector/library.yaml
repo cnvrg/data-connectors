@@ -1,0 +1,47 @@
+---
+title: Slack Connector
+description: "Download messages from Slack"
+icon: python
+version: 1.0.0
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+
+tags:
+  - training
+  - connector
+  - data
+
+command: python main.py
+
+requirements:
+  cpu: 2
+  memory: 2
+  gpu: 0
+  hpu: 0
+
+image: python:3.8
+
+
+language: python3
+
+arguments:
+  - key: api_token
+    type: categorical
+    values: []
+  - key: channel_id
+    type: categorical
+    values: []
+  - key: cnvrg_dataset
+    type: categorical
+    values: 
+      - None
+  - key: file_name
+    type: categorical
+    values:
+      - "slack.csv"
+
+
+
+

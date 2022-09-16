@@ -92,7 +92,6 @@ def clean_message(msg, html2text_obj):
     Returns:
         A string representing the processed/cleaned message text
     """
-    msg = None
     if msg is None:
         raise NoneMessageError()
 
