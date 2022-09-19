@@ -80,7 +80,7 @@ def get_messages(api_token,channel_id):
                 conversation_history = result["messages"]
                 
 
-                if conversation_history.empty == True:
+                if len(conversation_history) == 0:
                     raise NoMessageError()
 
                 df_conversation_history = pd.DataFrame(conversation_history)
