@@ -1,4 +1,4 @@
-datetime,Accelerometer1RMS,Accelerometer2RMS,Current,Pressure,Temperature,Thermocouple,Voltage,Volume Flow RateRMS,anomaly,changepoint,status
+time,Accelerometer1RMS,Accelerometer2RMS,Current,Pressure,Temperature,Thermocouple,Voltage,Volume Flow RateRMS,anomaly,changepoint,status
 ,0.0810554999999999,0.132572,1.4094799999999998,,,22.0867,231.247,77.0,0.0,0.0,inactive
 2020-03-01 17:03:55,0.0814173,0.136616,1.942,,,22.0904,229.569,76.9794,,,active
 2020-03-01 17:03:56,0.082209,0.132413,1.60694,0.054711,86.7442,,,76.0209,0.0,,active

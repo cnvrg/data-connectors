@@ -8,27 +8,21 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
-url = "https://us-east-1-1.aws.cloud2.influxdata.com"
-org =  "kris.pan@cnvrg.io"
-token = "I8idv5QMDs0IbuOU2vnxOljNNGU1bl_dvUYSLxkDFLugeerxB5NqGYHbh0uWSrdEV6g2PjGBGISm_0-n7_OL1A=="
-bucket = "anomaly_detection"
+
 # writing data to influxdb api
-client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
-
-df = pd.read_csv("github/data-connectors/influxdb_connector/influxdb_test.csv")
-print(df)
-# write_api = client.write_api(write_options=SYNCHRONOUS)
-# for value in range(5):
-#   point = (
-#     Point("measurement1")
-#     .tag("tagname1", "tagvalue1")
-#     .field("field1", value)
-#   )
-#   write_api.write(bucket=bucket, org="kris.pan@cnvrg.io", record=point)
-#   time.sleep(1) # separate points by 1 second
-
-
 '''
+write_api = client.write_api(write_options=SYNCHRONOUS)
+for value in range(5):
+  point = (
+    Point("measurement1")
+    .tag("tagname1", "tagvalue1")
+    .field("field1", value)
+  )
+  write_api.write(bucket=bucket, org="kris.pan@cnvrg.io", record=point)
+  time.sleep(1) # separate points by 1 second
+'''
+
+
 def parse_parameters():
     """Command line parser."""
     parser = argparse.ArgumentParser(description="""influxdb Connector""")
@@ -40,7 +34,7 @@ def parse_parameters():
                         help="""--- influxdb access organization account ---""")
     parser.add_argument('--bucket', action='store', dest='bucket', required=True,
                         help="""--- bucket where the data is pulled from ---""")
-    parser.add_argument('--range_start', action='store', dest='range_start', required=False, default='2020-01-01T00:00:00Z', 
+    parser.add_argument('--range_start', action='store', dest='range_start', required=False, default='-10y', 
                             help="""--- fetch from starting date in the format of 2020-01-01T00:00:00Z, or specify -1d, -1h, -1m for last day, hour, or minute ---""")
     parser.add_argument('--local_dir', action='store', dest='local_dir', required=False, default=cnvrg_workdir, 
                             help="""--- The path to save the dataset file to ---""")
@@ -62,27 +56,34 @@ def main():
         args.org = os.environ.get('INFLUXDB_ORG')
     if args.bucket.lower() == 'secret':
         args.bucket = os.environ.get('INFLUXDB_BUCKET')
-    
-    # TODO conncetion unit test
+
     client = influxdb_client.InfluxDBClient(url=args.url, token=args.token, org=args.org)
     query_api = client.query_api()
-    # TODO validate bucket and range 
     if args.range_start.lower() != 'none':
         query = 'from(bucket: "' + args.bucket + '")\n |> range(start:' + args.range_start + ')'
     else:
-        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:2020-01-01T00:00:00Z)'
+        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:-10y)'
     tables = query_api.query(query, org=args.org)
-    table_map = defaultdict(list)
+    csv_builder = dict()
+    csv_builder['time'] = []
 
     for table in tables:
-        # TODO parse all columns
         for record in table.records:
-            for key, value in record.items():
-            # table_map['time'].append(record['_time'])
-            # table_map['measurement'].append(record['_measurement'])
-            # table_map['value'].append(record['tagname1'])
-                table_map[key].append(value)
-    df = pd.DataFrame(table_map)
+            if record['_field'] not in csv_builder:
+                csv_builder[record['_field']] = []
+            csv_builder[record['_field']].append(record['_value'])
+            csv_builder['time'].append(record['_time'])
+    time_len = len(csv_builder['time']) // (len(csv_builder) - 1)
+    csv_builder['time'] = csv_builder['time'][:time_len]
+
+    # custom formatting for anomaly detection blueprint
+    sliced_time = []
+    for t in csv_builder['time']:
+        sliced_time.append(str(t)[:19])
+    csv_builder['anomaly'] = [1 if x == 3 else x for x in csv_builder['anomaly']]
+    csv_builder['time'] = sliced_time
+
+    df = pd.DataFrame(csv_builder)
     df.dropna(inplace=True)
     df.to_csv(args.local_dir+'/'+args.file_name, index=False)
 
@@ -103,4 +104,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-'''
+

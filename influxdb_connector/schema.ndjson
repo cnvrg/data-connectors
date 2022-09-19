@@ -1,0 +1,13 @@
+{"name": "time", "type": "timestamp"}
+{"name": "Accelerometer1RMS", "type": "field", "dataType": "float"}
+{"name": "Accelerometer2RMS", "type": "field", "dataType": "float"}
+{"name": "Current", "type": "field", "dataType": "float"}
+{"name": "Pressure", "type": "field", "dataType": "float"}
+{"name": "Temperature", "type": "field", "dataType": "float"}
+{"name": "Thermocouple", "type": "field", "dataType": "float"}
+{"name": "VolumeFlowRateRMS", "type": "field", "dataType": "float"}
+{"name": "Voltage", "type": "field", "dataType": "float"}
+{"name": "anomaly", "type": "field", "dataType": "float"}
+{"name": "changepoint", "type": "field", "dataTypepe": "integer"}
+{"name": "status", "type": "field", "dataType": "integer"}
+{"name": "humidity", "type": "field", "dataType": "string"}

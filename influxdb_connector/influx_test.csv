@@ -1,7 +1,7 @@
-﻿#datatype,datetime:yyyy-MM-dd HH:mm,double,double,double,double,double,double,double,double,long,long,string
+﻿#datatype,datetime:yyyy-MM-dd HH:mm,float,float,float,float,float,float,float,float,integer,integer,string
 #group,false,false,false,false,false,false,false,false,false,false,false,false
 #default,,,,,,,,,,,,
-,datetime,Accelerometer1RMS,Accelerometer2RMS,Current,Pressure,Temperature,Thermocouple,Voltage,Volume Flow RateRMS,anomaly,changepoint,status
+,time,Accelerometer1RMS,Accelerometer2RMS,Current,Pressure,Temperature,Thermocouple,Voltage,VolumeFlowRateRMS,anomaly,changepoint,status
 ,0.0810555,0.132572,1.40948,,,22.0867,231.247,77,0,0,inactive
 3/1/2020 17:03,0.0814173,0.136616,1.942,,,22.0904,229.569,76.9794,,,active
 3/1/2020 17:03,0.082209,0.132413,1.60694,0.054711,86.7442,,,76.0209,0,,active
