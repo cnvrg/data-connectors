@@ -8,6 +8,10 @@ author_email: "info@cnvrg.io"
 
 tags:
   - connector
+  - training
+
+command: python3 pubmed-connector.py
+
 requirements:
   cpu: 2
   memory: 2
@@ -24,7 +28,8 @@ arguments:
       - ''
   - key: max_results
     type: categorical
-    values: 5
+    values: 
+      - '5'
   - key: email
     type: categorical
     values:
