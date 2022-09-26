@@ -2,26 +2,12 @@ import os
 import argparse
 import pandas as pd
 from collections import defaultdict
-# from cnvrgv2 import Cnvrg
+from cnvrgv2 import Cnvrg
 import influxdb_client, os, time
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
-
-# writing data to influxdb api
-'''
-write_api = client.write_api(write_options=SYNCHRONOUS)
-for value in range(5):
-  point = (
-    Point("measurement1")
-    .tag("tagname1", "tagvalue1")
-    .field("field1", value)
-  )
-  write_api.write(bucket=bucket, org="kris.pan@cnvrg.io", record=point)
-  time.sleep(1) # separate points by 1 second
-'''
-
 
 def parse_parameters():
     """Command line parser."""
@@ -44,7 +30,73 @@ def parse_parameters():
                             help="""--- name of the dataset csv file ---""")
     return parser.parse_args()
 
+class InvalidBucketError(Exception):
+    """Raise if bucket name is not supported by influxdb cloud"""
+    def __init__(self, bucket):
+        super().__init__(bucket)
+        self.bucket = bucket
 
+    def __str__(self):
+        return f'InvalidBucketError: {self.bucket} is an invalid bucket name. Currently supports anomaly_detection or ts_forecast!'
+
+def influxdb_query(url, token, org, bucket, range_start):
+    """ 
+    Creates dictionary from query of given inputs
+        Args:
+            url: https address of influxdb cloud
+            token: token for accessing influxdb cloud
+            org: email address for user authentication
+            bucket: name of the bucket to access
+            range_start: starting range for query, default set to last 10 years of data
+    Returns:
+        A dictionary containing time and field columns from influxdb query
+    """
+    client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
+    query_api = client.query_api()
+    if range_start.lower() != 'none':
+        query = 'from(bucket: "' + bucket + '")\n |> range(start:' + range_start + ')'
+    else:
+        query = 'from(bucket: "' + bucket + '")\n |> range(start:-10y)'
+    tables = query_api.query(query, org=org)
+    csv_builder = dict()
+    csv_builder['time'] = []
+
+    # build dictionary from query
+    for table in tables:
+        for record in table.records:
+            if record['_field'] not in csv_builder:
+                csv_builder[record['_field']] = []
+            csv_builder[record['_field']].append(record['_value'])
+            csv_builder['time'].append(record['_time'])
+    time_len = len(csv_builder['time']) // (len(csv_builder) - 1)
+    csv_builder['time'] = csv_builder['time'][:time_len]
+    sliced_time = []
+    for t in csv_builder['time']:
+        sliced_time.append(str(t)[:19])
+    csv_builder['time'] = sliced_time
+
+    return csv_builder
+
+def custom_bucket_formatting(csv_builder, bucket):
+    """ 
+    Replaces placeholder values depending on the bucket used for query
+
+        Args:
+            bucket: name of the bucket to access
+    Raises:
+        InvalidBucketError when bucket is not supported by influxdb cloud
+    Returns:
+        A dictionary containing time and field columns from influxdb query
+    """
+    # custom formatting for anomaly detection and time series bucket
+    if bucket == 'anomaly_detection' or 'anomaly' in csv_builder:
+        csv_builder['anomaly'] = [1 if x == 3 else x for x in csv_builder['anomaly']]
+    elif bucket == 'ts_forecast':
+        pass
+    else:
+        raise InvalidBucketError(bucket)
+    
+    return csv_builder
 
 def main():
     args = parse_parameters()
@@ -57,32 +109,11 @@ def main():
     if args.bucket.lower() == 'secret':
         args.bucket = os.environ.get('INFLUXDB_BUCKET')
 
-    client = influxdb_client.InfluxDBClient(url=args.url, token=args.token, org=args.org)
-    query_api = client.query_api()
-    if args.range_start.lower() != 'none':
-        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:' + args.range_start + ')'
-    else:
-        query = 'from(bucket: "' + args.bucket + '")\n |> range(start:-10y)'
-    tables = query_api.query(query, org=args.org)
-    csv_builder = dict()
-    csv_builder['time'] = []
+    # return dictionary from custom query
+    csv_builder = influxdb_query(args.url, args.token, args.org, args.bucket, args.range_start)
+    csv_builder = custom_bucket_formatting(csv_builder, args.bucket)
 
-    for table in tables:
-        for record in table.records:
-            if record['_field'] not in csv_builder:
-                csv_builder[record['_field']] = []
-            csv_builder[record['_field']].append(record['_value'])
-            csv_builder['time'].append(record['_time'])
-    time_len = len(csv_builder['time']) // (len(csv_builder) - 1)
-    csv_builder['time'] = csv_builder['time'][:time_len]
-
-    # custom formatting for anomaly detection blueprint
-    sliced_time = []
-    for t in csv_builder['time']:
-        sliced_time.append(str(t)[:19])
-    csv_builder['anomaly'] = [1 if x == 3 else x for x in csv_builder['anomaly']]
-    csv_builder['time'] = sliced_time
-
+    # build pandas dataframe for csv
     df = pd.DataFrame(csv_builder)
     df.dropna(inplace=True)
     df.to_csv(args.local_dir+'/'+args.file_name, index=False)

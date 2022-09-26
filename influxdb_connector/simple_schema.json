@@ -1,4 +1,0 @@
-[
-{"name": "time", "type": "timestamp"},
-{"name": "measurement1", "type": "field", "dataType": "float"}
-]
