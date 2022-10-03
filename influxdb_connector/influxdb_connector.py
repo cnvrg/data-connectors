@@ -75,6 +75,13 @@ def parse_parameters():
     )
     return parser.parse_args()
 
+class NoneCnvrgDatasetError(Exception):
+    """Raise if message is None object"""
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "NoneMessageError: Please ensure the input is valid!"
 
 class InvalidBucketError(Exception):
     """Raise if bucket name is not supported by influxdb cloud"""
@@ -112,13 +119,16 @@ def influxdb_query(url, token, org, bucket, range_start):
     # build dictionary from query
     for table in tables:
         for record in table.records:
+            # scrape all fields from query results
             if record["_field"] not in csv_builder:
                 csv_builder[record["_field"]] = []
             csv_builder[record["_field"]].append(record["_value"])
             csv_builder["time"].append(record["_time"])
+    # since time is shwon 
     time_len = len(csv_builder["time"]) // (len(csv_builder) - 1)
     csv_builder["time"] = csv_builder["time"][:time_len]
     sliced_time = []
+    # remove redundancy of  
     for t in csv_builder["time"]:
         sliced_time.append(str(t)[:19])
     csv_builder["time"] = sliced_time
@@ -164,11 +174,12 @@ def main():
 
     # build pandas dataframe for csv
     df = pd.DataFrame(csv_builder)
-    df.dropna(inplace=True)
     df.to_csv(args.local_dir + "/" + args.file_name, index=False)
 
     # Store influxdb csv as cnvrg dataset
-    if args.cnvrg_dataset.lower() != "none":
+    if args.cnvrg_dataset.lower() == "none":
+        raise NoneCnvrgDatasetError()
+    else:    
         cnvrg = Cnvrg()
         ds = cnvrg.datasets.get(args.cnvrg_dataset)
         try:
