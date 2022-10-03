@@ -121,10 +121,10 @@ def wiki_main():
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
             output_summaries_file = "wiki_output.csv"
-            df1.to_csv("{}".format(output_summaries_file), index=False)
+            df1.to_csv(cnvrg_workdir+"/{}".format(output_summaries_file), index=False)
 
     except (wikipedia.exceptions.PageError, wikipedia.exceptions.WikipediaException,urllib.error.HTTPError):
-        print('Does not match any page. Try anßßother ID next time')
+        print('Does not match any page. Try another ID next time')
 
 if __name__ == '__main__':
     wiki_main()
