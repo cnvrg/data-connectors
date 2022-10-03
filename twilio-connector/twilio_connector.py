@@ -7,6 +7,7 @@ from collections import defaultdict
 from cnvrgv2 import Cnvrg
 from twilio.rest import Client
 
+
 # The rate limit based on Twilio's rate of dequeueing messages
 # For details, refer to https://support.twilio.com/hc/en-us/articles/115002943027-Understanding-Twilio-Rate-Limits-and-Message-Queues#h_01F0265SAZ9BYNPG0AQZ0AKRHZ
 NUM_OF_CALLS = 3
@@ -14,29 +15,97 @@ TIME_PERIOD_SEC = 1
 
 cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
+
 def parse_parameters():
     """Command line parser."""
     parser = argparse.ArgumentParser(description="""Twilio Connector""")
-    parser.add_argument('--auth_token', action='store', dest='auth_token', required=True, 
-                            help="""--- Twilio API Access Token ---""")
-    parser.add_argument('--account_sid', action='store', dest='account_sid', required=True,
-                            help="""--- Twilio Account SID ---""")
-    parser.add_argument('--conv_id', action='store', dest='conv_id', required=True,
-                        help="""--- Twilio Conversation ID ---""")
-    parser.add_argument('--leng_limit', action='store', dest='leng_limit', required=False, default=None, 
-                            help="""--- limit the number of messages fetched from the most recent ---""")
-    parser.add_argument('--local_dir', action='store', dest='local_dir', required=False, default=cnvrg_workdir, 
-                            help="""--- The path to save the dataset file to ---""")
-    parser.add_argument('--cnvrg_dataset', action='store', dest='cnvrg_dataset', required=False, default='None',
-                            help="""--- the name of the cnvrg dataset to store in ---""")
-    parser.add_argument('--file_name', action='store', dest='file_name', required=False, default='twilio.csv', 
-                            help="""--- name of the dataset csv file ---""")
+    parser.add_argument(
+        "--auth_token",
+        action="store",
+        dest="auth_token",
+        required=True,
+        help="""--- Twilio API Access Token ---""",
+    )
+    parser.add_argument(
+        "--account_sid",
+        action="store",
+        dest="account_sid",
+        required=True,
+        help="""--- Twilio Account SID ---""",
+    )
+    parser.add_argument(
+        "--conv_id",
+        action="store",
+        dest="conv_id",
+        required=True,
+        help="""--- Twilio Conversation ID ---""",
+    )
+    parser.add_argument(
+        "--leng_limit",
+        action="store",
+        dest="leng_limit",
+        required=False,
+        default=None,
+        help="""--- limit the number of messages fetched from the most recent ---""",
+    )
+    parser.add_argument(
+        "--local_dir",
+        action="store",
+        dest="local_dir",
+        required=False,
+        default=cnvrg_workdir,
+        help="""--- The path to save the dataset file to ---""",
+    )
+    parser.add_argument(
+        "--cnvrg_dataset",
+        action="store",
+        dest="cnvrg_dataset",
+        required=False,
+        default="None",
+        help="""--- the name of the cnvrg dataset to store in ---""",
+    )
+    parser.add_argument(
+        "--file_name",
+        action="store",
+        dest="file_name",
+        required=False,
+        default="twilio.csv",
+        help="""--- name of the dataset csv file ---""",
+    )
     return parser.parse_args()
 
-class Twilio:
+class NoneCnvrgDatasetError(Exception):
+    """Raise if message is None object"""
+    def __init__(self):
+        super().__init__()
 
+    def __str__(self):
+        return "NoneMessageError: Please ensure the input is valid!"
+
+class EmptyMessageError(Exception):
+    """Raise if message is empty"""
+
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return "EmptyMessageError: Please ensure that the conversation is non-empty."
+
+
+class InvalidRangeError(Exception):
+    """Raise when number of message to pull entered is incorrect or invalid"""
+
+    def __init__(self, leng_limit):
+        super().__init__(leng_limit)
+        self.leng_limit = leng_limit
+
+    def __str__(self):
+        return f"InvalidRangeError: Your number of message to pull of {self.leng_limit} is invalid!"
+
+
+class Twilio:
     def __init__(self, auth_token, account_sid):
-        self.client = Client(account_sid,auth_token)
+        self.client = Client(account_sid, auth_token)
 
     @sleep_and_retry
     @limits(calls=NUM_OF_CALLS, period=TIME_PERIOD_SEC)
@@ -47,29 +116,26 @@ class Twilio:
         Returns:
             conversation: new instance of conversation in Twilio
         """
-        self.conversation = self.client.conversations \
-                     .v1 \
-                     .conversations \
-                     .create(friendly_name = conv_name)
+        self.conversation = self.client.conversations.v1.conversations.create(
+            friendly_name=conv_name
+        )
 
         return self.conversation
 
     @sleep_and_retry
     @limits(calls=NUM_OF_CALLS, period=TIME_PERIOD_SEC)
     def add_message(self, conv_id, author, message):
-        """Add a new message in the conversation 
+        """Add a new message in the conversation
         Args:
             conv_id: string representing unique id of of the conversation
             author: string representing the author of the message
             message: string representing the body of the message
         Returns:
-            
+
         """
-        self.conversation = self.client.conversations \
-                .v1 \
-                .conversations(conv_id) \
-                .messages \
-                .create(author=author, body=message)
+        self.conversation = self.client.conversations.v1.conversations(
+            conv_id
+        ).messages.create(author=author, body=message)
 
         return None
 
@@ -77,56 +143,58 @@ class Twilio:
     @limits(calls=NUM_OF_CALLS, period=TIME_PERIOD_SEC)
     def get_conversation(self, conv_id, leng_limit=None):
         """Pulls a conversation messages using a unique conversation id from most recent.
-        
+
         Makes an API call to the conversations end point and pulls a single conversation using it's unique conversation id.
         Follows rate limits set by Twilio.
         Args:
             conv_id: string representing unique id for a conversation.
             leng_limit: limit the number of messages fetched from the most recent
+        Raise:
+            InvalidRangeError if number of message to pull is lesser or equal to zero
+            EmptyMessageError if there is no return message
         Returns:
             messages: list of conversation message instances
         """
+        if leng_limit is not None and leng_limit.isdigit() and int(leng_limit) <= 0:
+            raise InvalidRangeError
         if leng_limit is not None and leng_limit.isdigit():
             leng_limit = int(leng_limit)
-            self.messages = self.client.conversations \
-                                .v1 \
-                                .conversations(conv_id) \
-                                .messages \
-                                .list(order='desc', limit=leng_limit)
+            self.messages = self.client.conversations.v1.conversations(
+                conv_id
+            ).messages.list(order="desc", limit=leng_limit)
         else:
-            self.messages = self.client.conversations \
-                    .v1 \
-                    .conversations(conv_id) \
-                    .messages \
-                    .list(order='desc')
+            self.messages = self.client.conversations.v1.conversations(
+                conv_id
+            ).messages.list(order="desc")
+        if len(self.messages) == 0:
+            raise EmptyMessageError
         return self.messages
+
 
 def main():
     args = parse_parameters()
-    if args.auth_token.lower() == 'secret':
-        args.auth_token = os.environ.get('TWIL_TOKEN')
-    if args.account_sid.lower() == 'secret':
-        args.account_sid = os.environ.get('TWIL_SID')
-    twilio = Twilio(args.auth_token, args.account_sid)
-    messages = twilio.get_conversation(args.conv_id, args.leng_limit)
+    if args.auth_token.lower() == "secret":
+        args.auth_token = os.environ.get("TWIL_TOKEN")
+    if args.account_sid.lower() == "secret":
+        args.account_sid = os.environ.get("TWIL_SID")
+    twilio = Twilio('cb35017b7bbcf521f7374c2c1c3d80b7', 'AC912c6440dade4f00df12f79d8fe6428d')
+    messages = twilio.get_conversation('CHd1dedb93afc44d3f9e6c7599c3eb35f2', '3')
     messages_map = defaultdict(list)
 
-    # for msg in messages:
-    #     print(msg.date_created)
-    #     print(msg.author)
-    #     print(msg.body)
-
     for msg in messages:
-        messages_map['date_created'].append(msg.date_created)
-        messages_map['author'].append(msg.author)
-        messages_map['body'].append(msg.body)
-
+        messages_map["date_created"].append(msg.date_created)
+        messages_map["author"].append(msg.author)
+        messages_map["body"].append(msg.body)
     df = pd.DataFrame(messages_map)
-    df.dropna(inplace=True)
-    df.to_csv(args.local_dir+'/'+args.file_name, index=False)
+    try:
+        df.to_csv(args.local_dir + "/" + args.file_name, index=False)
+    except:
+        print("The provided Dataset was not found")
 
     # Store twilio csv as cnvrg dataset
-    if args.cnvrg_dataset.lower() != 'none':
+    if args.cnvrg_dataset.lower() != "none":
+        raise NoneCnvrgDatasetError()
+    else:
         cnvrg = Cnvrg()
         ds = cnvrg.datasets.get(args.cnvrg_dataset)
         try:
@@ -140,6 +208,5 @@ def main():
         ds.put_files(paths=[args.file_name])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
