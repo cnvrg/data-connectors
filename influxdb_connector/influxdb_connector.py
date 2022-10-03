@@ -83,17 +83,6 @@ class NoneCnvrgDatasetError(Exception):
     def __str__(self):
         return "NoneMessageError: Please ensure the input is valid!"
 
-class InvalidBucketError(Exception):
-    """Raise if bucket name is not supported by influxdb cloud"""
-
-    def __init__(self, bucket):
-        super().__init__(bucket)
-        self.bucket = bucket
-
-    def __str__(self):
-        return f"InvalidBucketError: {self.bucket} is an invalid bucket name. Currently supports anomaly_detection or ts_forecast!"
-
-
 def influxdb_query(url, token, org, bucket, range_start):
     """
     Creates dictionary from query of given inputs
@@ -124,37 +113,17 @@ def influxdb_query(url, token, org, bucket, range_start):
                 csv_builder[record["_field"]] = []
             csv_builder[record["_field"]].append(record["_value"])
             csv_builder["time"].append(record["_time"])
-    # since time is shwon 
+    # since time is shown for every field, remove redundancy in time
     time_len = len(csv_builder["time"]) // (len(csv_builder) - 1)
     csv_builder["time"] = csv_builder["time"][:time_len]
+    
+    # truncate datetime string so that the +00:00 is removed 
     sliced_time = []
-    # remove redundancy of  
     for t in csv_builder["time"]:
         sliced_time.append(str(t)[:19])
     csv_builder["time"] = sliced_time
 
     return csv_builder
-
-
-def custom_bucket_formatting(csv_builder, bucket):
-    """
-    Replaces placeholder values depending on the bucket used for query
-        Args:
-            bucket: name of the bucket to access
-    Raises:
-        InvalidBucketError when bucket is not supported by influxdb cloud
-    Returns:
-        A dictionary containing time and field columns from influxdb query
-    """
-    # custom formatting for anomaly detection and time series bucket
-    if bucket == "anomaly_detection" or "anomaly" in csv_builder:
-        csv_builder["anomaly"] = [1 if x == 3 else x for x in csv_builder["anomaly"]]
-    elif bucket == "ts_forecast":
-        pass
-    else:
-        raise InvalidBucketError(bucket)
-    return csv_builder
-
 
 def main():
     args = parse_parameters()
@@ -170,7 +139,6 @@ def main():
     csv_builder = influxdb_query(
         args.url, args.token, args.org, args.bucket, args.range_start
     )
-    csv_builder = custom_bucket_formatting(csv_builder, args.bucket)
 
     # build pandas dataframe for csv
     df = pd.DataFrame(csv_builder)
