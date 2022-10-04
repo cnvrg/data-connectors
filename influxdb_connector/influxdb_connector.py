@@ -144,19 +144,17 @@ def main():
     df = pd.DataFrame(csv_builder)
     df.to_csv(args.local_dir + "/" + args.file_name, index=False)
 
-    # Store influxdb csv as cnvrg dataset
-    if args.cnvrg_dataset.lower() == "none":
-        raise NoneCnvrgDatasetError()
-    else:    
+    # Store csv as cnvrg dataset
+    if args.cnvrg_dataset.lower() != 'none':
         cnvrg = Cnvrg()
         ds = cnvrg.datasets.get(args.cnvrg_dataset)
         try:
             ds.reload()
         except:
-            print("The provided Dataset was not found")
-            print(f"Creating a new dataset named {args.cnvrg_dataset}")
+            print("The provided data was not found")
+            print(f"Creating a new data named {args.cnvrg_dataset}")
             ds = cnvrg.datasets.create(name=args.cnvrg_dataset)
-        print("Uploading files to Cnvrg dataset")
+        print("Uploading files to Cnvrg")
         os.chdir(args.local_dir)
         ds.put_files(paths=[args.file_name])
 
