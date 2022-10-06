@@ -57,9 +57,9 @@ def fetch_full_articles(records):
             url = r.url
             opener = urllib.request.URLopener()
             opener.addheader('User-Agent', 'agent')
-            if not os.path.exists('pdfs'):
-                os.mkdir('pdfs')
-            filename, headers = opener.retrieve(url, 'pdfs/' + paper_id + '.pdf')
+            if not os.path.exists(cnvrg_workdir + '/pdfs'):
+                os.mkdir(cnvrg_workdir + '/pdfs')
+            filename, headers = opener.retrieve(url, cnvrg_workdir + '/pdfs/' + paper_id + '.pdf')
 
 def fetch_all_articles(papers):
     response = []
@@ -80,8 +80,7 @@ def fetch_all_articles(papers):
             else:
                 entry["abstract"] = "MISSING"
         response.append(entry)
-    #cnvrg_workdir + '/
-    with open('pubmed.json', 'w') as outfile:
+    with open(cnvrg_workdir + '/pubmed.json', 'w') as outfile:
         json.dump(response, outfile)
 
 if __name__ == '__main__':
