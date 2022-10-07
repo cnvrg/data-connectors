@@ -58,7 +58,7 @@ def to_csv(conn=None, query=None, filename=None):
     col_headers = [i[0] for i in cur.description]
     rows = [list(i) for i in cur.fetchall()]
     df = pd.DataFrame(rows, columns=col_headers)
-    df.to_csv('/cnvrg/' + filename, index=False)
+    df.to_csv(filename, index=False)
 
 
 if __name__ == '__main__':
