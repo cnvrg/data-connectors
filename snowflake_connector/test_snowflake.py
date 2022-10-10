@@ -4,8 +4,9 @@ import sys
 import pandas
 from snowflake_connector import connect, to_csv, run, close_connection, to_df
 
-class TestSnowflake(unittest.TestCase):
-    def setUp(self) -> None:
+class test_snowflake_connector(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
         # Parse the snowflake parameters
         self.args = []
         with open("arguments.txt") as f:
@@ -23,46 +24,49 @@ class TestSnowflake(unittest.TestCase):
         self.schema = ''
         self.incorrect_password = 'garbage'
 
-class TestSnowFlakeConnection(TestSnowflake):
-    def test_connection_status(self):
-        self.assertIsNotNone(
-            connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
-        )
+        # Intialize connection for 'query' testing
+        self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
 
-    def test_connection_execption(self):
+    @classmethod
+    def tearDownClass(self):
+        close_connection(self.snowflake_connection)
+
+    # Test snowflake connection success
+    def test_connection(self):
+        self.assertTrue(self.snowflake_connection)
+
+    # Test snowflake connection exception
+    def test_connection_exception(self):
         self.assertRaises(
             SystemExit, connect, self.incorrect_password, self.warehouse, self.account, self.user, self.database, self.schema
         )
 
-    def test_close_connection_exception(self):
+    # Test snowflake close connection exception
+    def test_close_exception(self):
         self.assertRaises(
             SystemExit, close_connection, None
         )
 
-class TestRunQuery(TestSnowflake):
+    # Test snowflake run query 
     def test_run_query(self):
-        self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
-        self.assertIsNotNone(
+        self.assertTrue(
             run(self.snowflake_connection, self.query)
         )
 
-    def test_run_execption(self):
-        self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
+    # Test snowflake run query exception
+    def test_run_query_exception(self):
         self.assertRaises(
             SystemExit, run, self.snowflake_connection, None
         )
 
-class TestDataFrameOutput(TestSnowflake):
+    # Test data-frame output 
     def test_df_output(self):
-        self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
         self.assertIsInstance(
             to_df(self.snowflake_connection, self.query), pandas.core.frame.DataFrame
         )
 
-# Skip this unit-test if the '/cnvrg/' path is set in the script 
-class TestCsvOutput(TestSnowflake):
+    # Test csv output
     def test_csv_output(self):
-        self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
         self.assertTrue(str(type(to_csv(self.snowflake_connection, self.query, self.output_file))), "_csv.reader")
 
 if __name__ == '__main__':
