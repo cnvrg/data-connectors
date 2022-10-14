@@ -1,8 +1,6 @@
 import os
 import argparse
 import pandas as pd
-from collections import defaultdict
-from cnvrgv2 import Cnvrg
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -230,6 +228,10 @@ def main():
 
     # Store csv as cnvrg dataset
     if str(args.cnvrg_dataset).lower() != "none":
+        # cnvrgv2 dependencies have version mismatch issue with influxdb_client so 
+        # the library is imported here
+        from cnvrgv2 import Cnvrg
+
         cnvrg = Cnvrg()
         ds = cnvrg.datasets.get(args.cnvrg_dataset)
         try:
