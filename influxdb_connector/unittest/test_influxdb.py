@@ -7,7 +7,6 @@ import unittest
 from influxdb_connector import Influxdb
 import yaml
 from yaml.loader import SafeLoader
-from pandas.testing import assert_frame_equal
 
 
 YAML_ARG_TO_TEST = "test_arguments"
@@ -29,14 +28,14 @@ class TestInfluxdb(unittest.TestCase):
         )
 
 
-# @unittest.skip('skipping ')
+@unittest.skip('skipping ')
 class TestConnection(TestInfluxdb):
     def test_connection(self):
         """Checks if connection to influxdb client is established"""
         self.assertTrue(self.influxdb.ping())
 
 
-# @unittest.skip('skipping ')
+@unittest.skip('skipping ')
 class TestReturnType(TestInfluxdb):
     def test_return_type(self):
         """Checks if the get_data function returns pandas dataframe type"""
@@ -93,4 +92,8 @@ class TestWriteReadEquality(TestInfluxdb):
         read_data = read_data.reset_index(drop=True)
         read_data = read_data.sort_index(axis=1)
 
-        assert_frame_equal(written_data, read_data)
+        self.assertTrue(pd.DataFrame.equals(written_data, read_data))
+
+
+if __name__ == "__main__":
+    unittest.main()
