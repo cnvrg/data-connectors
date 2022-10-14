@@ -46,7 +46,17 @@ arguments:
   - key: bucket
     type: categorical
     values: []
+  - key: measurement
+    type: categorical
+    values: []
+  - key: time_col
+    type: categorical
+    values: []
   - key: range_start
+    type: categorical
+    values:
+      - None
+  - key: range_end
     type: categorical
     values:
       - None
