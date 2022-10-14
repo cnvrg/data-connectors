@@ -98,16 +98,6 @@ def parse_parameters():
 
 
 # custom exceptions
-class NoneCnvrgDatasetError(Exception):
-    """Raise if message is None object"""
-
-    def __init__(self):
-        super().__init__()
-
-    def __str__(self):
-        return "NoneMessageError: Please ensure the input is valid!"
-
-
 class EmptyDataError(Exception):
     """Raise if there is no data"""
 
