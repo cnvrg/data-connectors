@@ -28,7 +28,7 @@ The InfluxDB Connector requires the following inputs:
 Refer to the following sample command to run this connector code:
 
 ```
-python influxdb_connector.py --token <TOKEN> --url <URL> --org <ORG> --bucket <BUCKET> --measurement <MEASUREMENT>
+python influxdb_connector.py --token <TOKEN> --url <URL> --org <ORG> --bucket <BUCKET> --measurement <MEASUREMENT> --time_col <TIMECOL>
 ```
 
 ## Outputs
