@@ -28,14 +28,14 @@ class TestInfluxdb(unittest.TestCase):
         )
 
 
-@unittest.skip('skipping ')
+# @unittest.skip('skipping ')
 class TestConnection(TestInfluxdb):
     def test_connection(self):
         """Checks if connection to influxdb client is established"""
         self.assertTrue(self.influxdb.ping())
 
 
-@unittest.skip('skipping ')
+# @unittest.skip('skipping ')
 class TestReturnType(TestInfluxdb):
     def test_return_type(self):
         """Checks if the get_data function returns pandas dataframe type"""
