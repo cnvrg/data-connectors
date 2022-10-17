@@ -1,4 +1,0 @@
-cnvrgv2
-pandas
-splunk-cloud-sdk 
-ratelimit
