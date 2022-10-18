@@ -6,13 +6,10 @@ This library is made to connect to PubMed and retrieve information about scienti
 
 ```--email``` - string, required. The user's email. Required for PubMed API access.
 
-```--field``` - string, required. The field that will be extracted from the articles. This can be the main title, the abstract, both, or full articles only. 
+```--field``` - string, required. The field that will be extracted from the articles. This can be the main title (-'title'), the abstract (-'abstract'), both ('title+abstract'), or full articles only ('full').
+
+In the full-articles-only mode, a folder named "pdfs" which contains the articles files will be created as an output artifact.  
+In the other modes, a json file named "pubmed.json" which contains the specified fields will be created as an output artifact.  
 
 See information about how to build the query [here](https://dataguide.nlm.nih.gov/classes/edirect-for-pubmed/samplecode1.html#esearch).
-
-
-
-
-
-
 
