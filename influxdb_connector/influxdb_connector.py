@@ -165,6 +165,9 @@ class Influxdb:
         """
         data = query_api.query_data_frame(query=query, org=org)
 
+        if len(data) == 0:
+            raise EmptyDataError
+        
         # convert back the time column name
         if "_time" in data.columns:
             data.rename(columns={"_time": time_col}, inplace=True)
