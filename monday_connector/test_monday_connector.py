@@ -1,4 +1,5 @@
 import unittest
+import json
 import _csv
 from monday_connector import boards_and_workspaces, boards, specificquery
 
@@ -43,3 +44,9 @@ class test_monday_connector(unittest.TestCase):
         )
 
     # WIP - test specific query json output generation and write a unit-testcase for it
+    @unittest.skip("Skipping this until specific query function is fixed")
+    def test_JSON_output(self):
+        specificquery(self.specific_query, self.api_url, self.headers)
+        with open('specific.json', 'r') as f:
+            json_data = json.load(f)
+        self.assertTrue(json_data)

@@ -11,7 +11,7 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 """
 This function takes input a GraphQL query and saves the reponse as a json file.
 """
-def specificquery(sq):
+def specificquery(sq, apiUrl, headers):
 
     data = {'query' : sq}
     r = requests.post(url=apiUrl, json=sq, headers=headers)  # make request
@@ -29,7 +29,7 @@ def specificquery(sq):
             raise Exception(returns)
     # save the json response
     json_object = json.dumps(returns, indent=4)
-    with open(cnvrg_workdir+"/specific.json", "w") as outfile:
+    with open("specific.json", "w") as outfile:
         outfile.write(json_object)
 
 
@@ -38,7 +38,7 @@ This function creates two CSVs one for all workspaces and one for all boards con
 """
 
 
-def boards_and_workspaces():
+def boards_and_workspaces(apiUrl, headers):
     query = "{ boards { name id workspace {id name description kind} permissions owners{name}}}"
     data = {"query": query}
     print("querying all boards")
@@ -90,8 +90,8 @@ def boards_and_workspaces():
             except TypeError:  # if the workspace is None
                 pass
         print("saving boards and workspaces")
-        df_boards.to_csv(cnvrg_workdir+"/boards.csv")
-        df_workspace.to_csv(cnvrg_workdir+"/workspaces.csv")
+        df_boards.to_csv("boards.csv")
+        df_workspace.to_csv("workspaces.csv")
         return board_ids
 
 
@@ -114,7 +114,7 @@ This function creates one csv per board containing all the necessary in the boar
 """
 
 
-def boards(boardids):
+def boards(boardids, apiUrl, headers, sep_cols, equiv_cols, not_flat):
     for everyboard in boardids:
         print("querying board id: "+everyboard)
         query = (
@@ -167,7 +167,7 @@ def boards(boardids):
         df = flattening(df, equiv_cols_task, not_flat)
                 
         print("saving board id: "+everyboard)
-        df.to_csv(cnvrg_workdir+"/"+everyboard + ".csv")
+        df.to_csv(everyboard + ".csv")
 
 
 if __name__ == "__main__":
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     headers = {"Authorization": key}
 
     if sq != "":
-        specificquery(sq)
+        specificquery(sq, apiUrl, headers)
     else:
-        boards_ids = boards_and_workspaces()
-        boards(boards_ids)
+        boards_ids = boards_and_workspaces(apiUrl, headers)
+        boards(boards_ids, apiUrl, headers, sep_cols, equiv_cols, not_flat)
