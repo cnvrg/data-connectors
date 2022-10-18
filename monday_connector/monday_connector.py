@@ -12,14 +12,14 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 This function takes input a GraphQL query and saves the reponse as a json file.
 """
 def specificquery(sq):
-
-    data = {'query' : sq}
-    r = requests.post(url=apiUrl, json=sq, headers=headers)  # make request
+    data = {'query': sq}
+    r = requests.post(url=apiUrl, json=data, headers=headers)  # make request
     returns = r.json()
+    print(returns)
     try:
         returns = returns["data"]
     except:
-        if "Complexity budget exhausted" in returns["error_message"]:
+        if "Complexity budget exhausted" in returns["errors"][0]['message']:
             print("going to wait 60sec because complexity budget exhausted")
             time.sleep(60)
             r = requests.post(url=apiUrl, json=data, headers=headers)
