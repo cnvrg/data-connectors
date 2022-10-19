@@ -35,7 +35,7 @@ class test_monday_connector(unittest.TestCase):
 
     # Check csv output for boards function 
     def test_csv_output(self):
-        self.assertTrue(str(type(boards(self.board_ids, self.api_url, self.headers, self.sep_cols, self.equiv_cols, self.not_flat))), "_csv.reader")
+        self.assertTrue(str(type(boards([self.board_ids[0]], self.api_url, self.headers, self.sep_cols, self.equiv_cols, self.not_flat))), "_csv.reader")
 
     # Test exception for 'specificquery' function - passing invalid query
     def test_monday_connection_exception(self):
@@ -43,8 +43,7 @@ class test_monday_connector(unittest.TestCase):
             Exception, specificquery, self.invalid_query
         )
 
-    # WIP - test specific query json output generation and write a unit-testcase for it
-    @unittest.skip("Skipping this until specific query function is fixed")
+    # Test Json output 'specific.json' and see if it loads properly 
     def test_JSON_output(self):
         specificquery(self.specific_query, self.api_url, self.headers)
         with open('specific.json', 'r') as f:

@@ -12,14 +12,14 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 This function takes input a GraphQL query and saves the reponse as a json file.
 """
 def specificquery(sq, apiUrl, headers):
-
-    data = {'query' : sq}
-    r = requests.post(url=apiUrl, json=sq, headers=headers)  # make request
+    data = {'query': sq}
+    r = requests.post(url=apiUrl, json=data, headers=headers)  # make request
     returns = r.json()
+    print(returns)
     try:
         returns = returns["data"]
     except:
-        if "Complexity budget exhausted" in returns["error_message"]:
+        if "Complexity budget exhausted" in returns["errors"][0]['message']:
             print("going to wait 60sec because complexity budget exhausted")
             time.sleep(60)
             r = requests.post(url=apiUrl, json=data, headers=headers)
@@ -31,7 +31,6 @@ def specificquery(sq, apiUrl, headers):
     json_object = json.dumps(returns, indent=4)
     with open("specific.json", "w") as outfile:
         outfile.write(json_object)
-
 
 """
 This function creates two CSVs one for all workspaces and one for all boards contanining high level information
@@ -235,6 +234,8 @@ if __name__ == "__main__":
     apiUrl = "https://api.monday.com/v2"
     headers = {"Authorization": key}
 
+
+    print(sq)
     if sq != "":
         specificquery(sq, apiUrl, headers)
     else:
