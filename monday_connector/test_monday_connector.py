@@ -48,4 +48,5 @@ class test_monday_connector(unittest.TestCase):
         specificquery(self.specific_query, self.api_url, self.headers)
         with open('specific.json', 'r') as f:
             json_data = json.load(f)
+        f.close()
         self.assertTrue(json_data)
