@@ -11,7 +11,7 @@ cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 """
 This function takes input a GraphQL query and saves the reponse as a json file.
 """
-def specificquery(sq, apiUrl, headers):
+def specificquery(sq, apiUrl, headers, file_dir):
     data = {'query': sq}
     r = requests.post(url=apiUrl, json=data, headers=headers)  # make request
     returns = r.json()
@@ -29,7 +29,7 @@ def specificquery(sq, apiUrl, headers):
             raise Exception(returns)
     # save the json response
     json_object = json.dumps(returns, indent=4)
-    with open("specific.json", "w") as outfile:
+    with open(file_dir + "/" + "specific.json", "w") as outfile:
         outfile.write(json_object)
 
 """
@@ -37,7 +37,7 @@ This function creates two CSVs one for all workspaces and one for all boards con
 """
 
 
-def boards_and_workspaces(apiUrl, headers):
+def boards_and_workspaces(apiUrl, headers, file_dir):
     query = "{ boards { name id workspace {id name description kind} permissions owners{name}}}"
     data = {"query": query}
     print("querying all boards")
@@ -89,8 +89,8 @@ def boards_and_workspaces(apiUrl, headers):
             except TypeError:  # if the workspace is None
                 pass
         print("saving boards and workspaces")
-        df_boards.to_csv("boards.csv")
-        df_workspace.to_csv("workspaces.csv")
+        df_boards.to_csv(file_dir + "/" + "boards.csv")
+        df_workspace.to_csv(file_dir + "/" + "workspaces.csv")
         return board_ids
 
 
@@ -113,7 +113,7 @@ This function creates one csv per board containing all the necessary in the boar
 """
 
 
-def boards(boardids, apiUrl, headers, sep_cols, equiv_cols, not_flat):
+def boards(boardids, apiUrl, headers, sep_cols, equiv_cols, not_flat, file_dir):
     for everyboard in boardids:
         print("querying board id: "+everyboard)
         query = (
@@ -166,13 +166,21 @@ def boards(boardids, apiUrl, headers, sep_cols, equiv_cols, not_flat):
         df = flattening(df, equiv_cols_task, not_flat)
                 
         print("saving board id: "+everyboard)
-        df.to_csv(everyboard + ".csv")
+        df.to_csv(file_dir + "/" + everyboard + ".csv")
 
 
 if __name__ == "__main__":
 
     # read arguments here
     parser = argparse.ArgumentParser(description="""Creator""")
+    parser.add_argument(
+        "--local_dir",
+        action="store",
+        dest="local_dir",
+        required=False,
+        default=cnvrg_workdir,
+        help="""--- The path to save the dataset file to ---""",
+    )
     parser.add_argument(
         "--specific_query",
         action="store",
@@ -216,6 +224,7 @@ if __name__ == "__main__":
         help="""columns you wish to keep as list""",
     )
     args = parser.parse_args()
+    file_dir = args.local_dir
     sq = args.specific_query
     apik = args.apikey
     equiv_cols = args.equivalent_columns
@@ -237,7 +246,7 @@ if __name__ == "__main__":
 
     print(sq)
     if sq != "":
-        specificquery(sq, apiUrl, headers)
+        specificquery(sq, apiUrl, headers, file_dir)
     else:
-        boards_ids = boards_and_workspaces(apiUrl, headers)
-        boards(boards_ids, apiUrl, headers, sep_cols, equiv_cols, not_flat)
+        boards_ids = boards_and_workspaces(apiUrl, headers, file_dir)
+        boards(boards_ids, apiUrl, headers, sep_cols, equiv_cols, not_flat, file_dir)

@@ -1,7 +1,9 @@
 import unittest
 import json
+import os, sys
 import _csv
 from monday_connector import boards_and_workspaces, boards, specificquery
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class test_monday_connector(unittest.TestCase):
     @classmethod
@@ -21,9 +23,15 @@ class test_monday_connector(unittest.TestCase):
         self.sep_cols = ''
         self.equiv_cols = ''
         self.not_flat = ''
+        self.unittest_dir = "unit_test_data"
+        # Configure the 'local_dir' parameter as per user's requirement 
+        self.local_dir = os.path.dirname(os.path.abspath(__file__))
+        # Make a Unit-testing data directory
+        self.data_path = os.path.join(self.local_dir, self.unittest_dir)
+        os.mkdir(self.data_path)
 
         # Calling boards and workspaces - retrieve board ids 
-        self.board_ids = boards_and_workspaces(self.api_url, self.headers)
+        self.board_ids = boards_and_workspaces(self.api_url, self.headers, self.data_path)
 
     '''
     Globally defined vairables in the script - apiUrl and headers - prevents successful unittesting 
@@ -35,18 +43,18 @@ class test_monday_connector(unittest.TestCase):
 
     # Check csv output for boards function 
     def test_csv_output(self):
-        self.assertTrue(str(type(boards([self.board_ids[0]], self.api_url, self.headers, self.sep_cols, self.equiv_cols, self.not_flat))), "_csv.reader")
+        self.assertTrue(str(type(boards([self.board_ids[0]], self.api_url, self.headers, self.sep_cols, self.equiv_cols, self.not_flat, self.data_path))), "_csv.reader")
 
     # Test exception for 'specificquery' function - passing invalid query
     def test_monday_connection_exception(self):
         self.assertRaises(
-            Exception, specificquery, self.invalid_query
+            Exception, specificquery, self.invalid_query, self.api_url, self.api_key, self.data_path
         )
 
     # Test Json output 'specific.json' and see if it loads properly 
     def test_JSON_output(self):
-        specificquery(self.specific_query, self.api_url, self.headers)
-        with open('specific.json', 'r') as f:
+        specificquery(self.specific_query, self.api_url, self.headers, self.data_path)
+        with open(self.data_path + "/" + "specific.json", 'r') as f:
             json_data = json.load(f)
         f.close()
         self.assertTrue(json_data)
