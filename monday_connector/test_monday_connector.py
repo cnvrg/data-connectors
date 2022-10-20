@@ -1,6 +1,6 @@
 import unittest
 import json
-import os, sys
+import os, sys, shutil
 import _csv
 from monday_connector import boards_and_workspaces, boards, specificquery
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -24,7 +24,6 @@ class test_monday_connector(unittest.TestCase):
         self.equiv_cols = ''
         self.not_flat = ''
         self.unittest_dir = "unit_test_data"
-        # Configure the 'local_dir' parameter as per user's requirement 
         self.local_dir = os.path.dirname(os.path.abspath(__file__))
         # Make a Unit-testing data directory
         self.data_path = os.path.join(self.local_dir, self.unittest_dir)
@@ -32,6 +31,11 @@ class test_monday_connector(unittest.TestCase):
 
         # Calling boards and workspaces - retrieve board ids 
         self.board_ids = boards_and_workspaces(self.api_url, self.headers, self.data_path)
+
+    # Skip or comment this out if you need to have a look at the data 
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.data_path)
 
     '''
     Globally defined vairables in the script - apiUrl and headers - prevents successful unittesting 

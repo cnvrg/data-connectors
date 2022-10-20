@@ -244,7 +244,6 @@ if __name__ == "__main__":
     headers = {"Authorization": key}
 
 
-    print(sq)
     if sq != "":
         specificquery(sq, apiUrl, headers, file_dir)
     else:
