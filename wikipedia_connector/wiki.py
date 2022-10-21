@@ -32,6 +32,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 import lxml
 import os
+cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 class WikiPage:
     def __init__(self, page):
@@ -89,10 +90,16 @@ def wiki_main():
                         help="""--- For inner use of cnvrg.io ---""")
     parser.add_argument('--output_dir', action='store', dest='output_dir',
                         help="""--- For inner use of cnvrg.io ---""")
-
+    parser.add_argument(        "--local_dir",
+        action="store",
+        dest="local_dir",
+        required=False,
+        default=cnvrg_workdir,
+        help="""--- The path to save the dataset file to ---""",)
+    
     args = parser.parse_args()
     topic = args.topics
-    cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
+    file_dir = args.local_dir
     if topic.endswith(".csv"):
         topics = pd.read_csv(topic)
         flag_0 = "dataframe"
@@ -126,7 +133,7 @@ def wiki_main():
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
             output_summaries_file = "wiki_output.csv"
-            df1.to_csv(cnvrg_workdir+"/{}".format(output_summaries_file), index=False)
+            df1.to_csv(file_dir+"/{}".format(output_summaries_file), index=False)
         else:
             input_list = []
             list2 = []
@@ -142,7 +149,7 @@ def wiki_main():
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
             output_summaries_file = "wiki_output.csv"
-            df1.to_csv(cnvrg_workdir+"/{}".format(output_summaries_file), index=False)
+            df1.to_csv(file_dir+"/{}".format(output_summaries_file), index=False)
 
     except (wikipedia.exceptions.PageError, wikipedia.exceptions.WikipediaException,urllib.error.HTTPError):
         print('Does not match any page. Try another ID next time')
