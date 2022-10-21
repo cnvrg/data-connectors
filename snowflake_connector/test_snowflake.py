@@ -34,10 +34,10 @@ class test_snowflake_connector(unittest.TestCase):
         # Intialize connection for 'query' testing
         self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
 
-#    @classmethod
-#    def tearDownClass(self):
-#        close_connection(self.snowflake_connection)
-#        shutil.rmtree(self.data_path)
+    @classmethod
+    def tearDownClass(self):
+        close_connection(self.snowflake_connection)
+        shutil.rmtree(self.data_path)
 
     # Test snowflake connection success
     def test_connection(self):
