@@ -1,8 +1,10 @@
+import shutil
 import unittest
 import os
 import sys
 import pandas
 from snowflake_connector import connect, to_csv, run, close_connection, to_df
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class test_snowflake_connector(unittest.TestCase):
     @classmethod
@@ -23,13 +25,19 @@ class test_snowflake_connector(unittest.TestCase):
         self.warehouse = ''
         self.schema = ''
         self.incorrect_password = 'garbage'
+        self.unittest_dir = "unit_test_data"
+        self.local_dir = os.path.dirname(os.path.abspath(__file__))
+        # Make a Unit-testing data directory
+        self.data_path = os.path.join(self.local_dir, self.unittest_dir)
+        os.mkdir(self.data_path)
 
         # Intialize connection for 'query' testing
         self.snowflake_connection = connect(self.password, self.warehouse, self.account, self.user, self.database, self.schema)
 
-    @classmethod
-    def tearDownClass(self):
-        close_connection(self.snowflake_connection)
+#    @classmethod
+#    def tearDownClass(self):
+#        close_connection(self.snowflake_connection)
+#        shutil.rmtree(self.data_path)
 
     # Test snowflake connection success
     def test_connection(self):
@@ -65,9 +73,9 @@ class test_snowflake_connector(unittest.TestCase):
             to_df(self.snowflake_connection, self.query), pandas.core.frame.DataFrame
         )
 
-    # Test csv output
+    # Test csv output - skip this test if path is set to '/cnvrg'
     def test_csv_output(self):
-        self.assertTrue(str(type(to_csv(self.snowflake_connection, self.query, self.output_file))), "_csv.reader")
+        self.assertTrue(str(type(to_csv(self.data_path, self.snowflake_connection, self.query, self.output_file))), "_csv.reader")
 
 if __name__ == '__main__':
     unittest.main()
