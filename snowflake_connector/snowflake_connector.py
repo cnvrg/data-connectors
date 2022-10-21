@@ -4,6 +4,7 @@ import snowflake.connector
 import pandas as pd
 import os
 import sys
+cnvrg_workdir = os.environ.get("CNVRG_WORKDIR", "/cnvrg")
 
 # setup a connection
 def connect(password, warehouse, account, user, database, schema):
@@ -53,17 +54,25 @@ def to_df(conn=None, query=None):
     return df
 
 # output as a csv
-def to_csv(conn=None, query=None, filename=None):
+def to_csv(file_dir, conn=None, query=None, filename=None):
     cur = run(conn=conn, query=query)
     col_headers = [i[0] for i in cur.description]
     rows = [list(i) for i in cur.fetchall()]
     df = pd.DataFrame(rows, columns=col_headers)
-    df.to_csv(filename, index=False)
+    df.to_csv(file_dir + "/" + filename, index=False)
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='set input arguments')
+    parser.add_argument(
+        "--local_dir",
+        action="store",
+        dest="local_dir",
+        required=False,
+        default=cnvrg_workdir,
+        help="""--- The path to save the dataset file to ---""",
+    )
     parser.add_argument(
         '--user',
         action="store",
@@ -130,7 +139,8 @@ if __name__ == '__main__':
     filename = args.filename
     database = args.database
     dataset = args.dataset
+    file_dir = args.local_dir
 
     snf = connect(password, warehouse, account, user, database, schema)
 
-    to_csv(conn=snf, query=query, filename=filename)
+    to_csv(file_dir, conn=snf, query=query, filename=filename)
