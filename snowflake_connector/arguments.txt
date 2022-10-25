@@ -1,6 +1,0 @@
-tanay97
-Cnvrg@123
-hx30595.us-east-2.aws
-Public
-select * from tanay97.public.unittest
-test.csv
