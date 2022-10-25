@@ -1,0 +1,10 @@
+test_arguments:
+  user: "tanay97"
+  password: "Cnvrg@123"
+  account: "hx30595.us-east-2.aws"
+  database: "Public"
+  query: "select * from tanay97.public.unittest"
+  output_file: "test.csv"
+  warehouse: ""
+  schema: ""
+  incorrect_password: "garbage"
