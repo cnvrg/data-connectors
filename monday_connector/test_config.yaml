@@ -1,0 +1,5 @@
+test_arguments:
+  api_url: "https://api.monday.com/v2"
+  api_key: "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjE4NTg2NDgwOCwidWlkIjoyOTgwMzgxOCwiaWFkIjoiMjAyMi0xMC0xM1QxMjo0NjoxMy45OTBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6NjgxMjQ2MywicmduIjoidXNlMSJ9.SLMx1aU2As6wUrZYV8rwmw92gH8aWwkuJslzFiiTv7Y"
+  specific_query: "{ boards (limit:1) {name id description items { name column_values { title text} } } }"
+  invalid_query: ""
