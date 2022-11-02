@@ -5,6 +5,7 @@ import sys
 import pandas
 import yaml
 from yaml.loader import SafeLoader
+import numpy
 from snowflake_connector import connect, to_csv, run, close_connection, to_df
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 YAML_ARG_TO_TEST = "test_arguments"
@@ -35,6 +36,22 @@ class test_snowflake_connector(unittest.TestCase):
             self.test_cfg["database"], 
             self.test_cfg["schema"]
             )
+
+        '''
+        Create a file for comparison - this file is uploaded on snowflake for comparison
+           TEST_COLUMN_1  TEST_COLUMN_2
+                       1              2
+                       2              3
+                       3              4
+                       4              5
+                       5              6
+        '''
+        self.compare_data = {"TEST_COLUMN_1": [1, 2, 3, 4, 5], "TEST_COLUMN_2": [2, 3, 4, 5, 6]}
+        self.df = pandas.DataFrame(self.compare_data)
+
+        # Create a csv file and compare it's content
+        self.pulled_csv_output = to_csv(self.data_path, self.snowflake_connection, self.test_cfg["query"], self.test_cfg["output_file"])
+        self.pulled_df = pandas.read_csv(self.data_path + "/" + self.test_cfg["output_file"])
 
     @classmethod
     def tearDownClass(self):
@@ -83,12 +100,17 @@ class test_snowflake_connector(unittest.TestCase):
 
     # Test csv output - skip this test if path is set to '/cnvrg'
     def test_csv_output(self):
-        self.assertTrue(str(type(to_csv(
-            self.data_path, 
-            self.snowflake_connection, 
-            self.test_cfg["query"], 
-            self.test_cfg["output_file"]
-            ))), "_csv.reader")
+        self.assertTrue(str(type(self.pulled_csv_output)), "_csv.reader")
+
+    # Test the content of the data frames - compare
+    def df_equals(self):
+        return (self.df.values == self.pulled_df.values).all()
+
+    # Test the csv content of both the files
+    def test_csv_content(self):
+        self.assertTrue(
+            self.df_equals()
+        )
 
 if __name__ == '__main__':
     unittest.main()
