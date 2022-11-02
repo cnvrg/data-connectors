@@ -71,7 +71,12 @@ class TestWiki(unittest.TestCase):
         # Checks if the 'get_clean_text' function returns string
         self.assertIsInstance(self.processed_text, str)
 
-    # WIP - Develop a test-case to check 'get_clean_text' functionality
+    def test_get_clean_text(self):
+        # Checks the functionality of 'get_clean_text'
+        self.assertEqual(
+            self.wiki.get_clean_text(self.test_cfg["get_clean_text_input"]), 
+            self.test_cfg["get_clean_text_output"]
+        )
 
 if __name__ == "__main__":
     unittest.main()
