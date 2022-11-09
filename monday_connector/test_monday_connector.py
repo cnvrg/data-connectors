@@ -21,6 +21,7 @@ class test_monday_connector(unittest.TestCase):
 
         # Internal parameters for functions 
         self.headers = {"Authorization": self.test_cfg["api_key"]}
+        self.incorrect_headers = {"Authorization": self.test_cfg["incorrect_api_key"]}
         self.sep_cols = ''
         self.equiv_cols = ''
         self.not_flat = ''
@@ -43,10 +44,6 @@ class test_monday_connector(unittest.TestCase):
     def test_list_output(self):
         self.assertTrue(self.board_ids, list)
 
-    # Check csv output for boards function 
-    def test_csv_output(self):
-        self.assertTrue(str(type(boards([self.board_ids[0]], self.test_cfg["api_url"], self.headers, self.sep_cols, self.equiv_cols, self.not_flat, self.data_path))), "_csv.reader")
-
     # Test exception for 'specificquery' function - passing invalid query
     def test_monday_connection_exception(self):
         self.assertRaises(
@@ -60,3 +57,19 @@ class test_monday_connector(unittest.TestCase):
             json_data = json.load(f)
         f.close()
         self.assertTrue(json_data)
+
+    # Check csv output for boards function
+    def test_csv_output(self):
+        self.assertTrue(str(type(boards([self.board_ids[0]], self.test_cfg["api_url"], self.headers, self.sep_cols, self.equiv_cols, self.not_flat, self.data_path))), "_csv.reader")
+
+    # Check exception for boards function
+    def test_boards_exception(self):
+        self.assertRaises(
+            Exception, boards, [self.board_ids[0]], self.test_cfg["api_url"], self.incorrect_headers, self.sep_cols, self.equiv_cols, self.not_flat, self.data_path
+        )
+
+    # Check exception for boards_and_workspaces function
+    def test_boards_and_workspaces_exception(self):
+        self.assertRaises(
+            Exception, boards_and_workspaces, self.test_cfg["api_url"], self.incorrect_headers, self.data_path
+        )
