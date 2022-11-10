@@ -26,5 +26,5 @@ jobs:
           pip install -r wikipedia_connector/requirements.txt
         working-directory: ${{ env.GITHUB_WORKSPACE }}
       - name: Unit test execution
-        run: cd wikipedia_connector && python3 -m inittest -v test_wiki.py
+        run: cd wikipedia_connector && python3 -m unittest -v test_wiki.py
         working-directory: ${{ env.GITHUB_WORKSPACE }}
