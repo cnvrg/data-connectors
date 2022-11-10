@@ -13,3 +13,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: test 
+        run: ls wikipedia_connector
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+      - name: Install libs
+        run: |
+          #python -m pip install --upgrade pip
+          pip install -r wikipedia_connector/requirements.txt
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+      - name: Unit test execution
+        run: cd wikipedia_connector && python test_train.py
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
