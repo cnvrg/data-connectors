@@ -8,7 +8,7 @@ on:
       - wikipedia_connector/**
       
   pull_request:
-
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
