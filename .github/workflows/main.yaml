@@ -1,9 +1,8 @@
-name: unit tests
+name: unit tests wikipedia_connector
 
 on:
   push:
     branches:
-      - main
       - pipeline-test
   pull_request:
 
