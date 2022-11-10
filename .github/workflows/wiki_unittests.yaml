@@ -3,7 +3,7 @@ name: Unit Test for wikipedia_connector
 on:
   push:
     branches:
-      - md-unittests
+      - pipeline-test
     paths:
       - wikipedia_connector/**
       
