@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - pipeline-test
+    paths: 
+      - snowflake_connector/**
+      
   pull_request:
 
 jobs:
