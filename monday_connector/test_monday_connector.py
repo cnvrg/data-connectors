@@ -3,9 +3,8 @@ import json
 import os, sys, shutil
 import _csv
 import yaml
-import requests
 from yaml.loader import SafeLoader
-from monday_connector import boards_and_workspaces, boards, specificquery
+from monday_connector import boards_and_workspaces, boards, specificquery, requests
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 YAML_ARG_TO_TEST = "test_arguments"
 
