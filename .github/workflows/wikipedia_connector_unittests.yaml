@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - pipeline-test
+      - master
     paths: 
       - wikipedia_connector/**
     
