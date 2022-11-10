@@ -3,6 +3,7 @@ import json
 import os, sys, shutil
 import _csv
 import yaml
+import requests
 from yaml.loader import SafeLoader
 from monday_connector import boards_and_workspaces, boards, specificquery
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
