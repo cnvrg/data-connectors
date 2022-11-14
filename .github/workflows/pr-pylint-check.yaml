@@ -15,7 +15,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install pylint
-        run: apt install pylint
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install pylint and dependencies
+        run: |
+        python -m pip install --upgrade pip
+        pip install pylint
       - name: Run pylint on *.py files
-        run: pylint ./*.py ./**/*.py
+        run: |
+          find . -name '*.py' -exec pylint () \;
