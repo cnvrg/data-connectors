@@ -21,8 +21,8 @@ jobs:
           python-version: 3.8
       - name: Install pylint and dependencies
         run: |
-        python3.8 -m pip install --upgrade pip
-        pip install pylint
+          python3.8 -m pip install --upgrade pip
+          pip install pylint
       - name: Run pylint on *.py files
         run: |
           find . -name '*.py' -exec pylint () \;
