@@ -89,54 +89,63 @@ if __name__ == '__main__':
         '--user',
         action="store",
         dest='user',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--account',
         action="store",
         dest='account',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--warehouse',
         action="store",
         dest='warehouse',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--database',
         action="store",
         dest='database',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--schema',
         action="store",
         dest='schema',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--password',
         action="store",
         dest='password',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--query',
         action="store",
         dest='query',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--filename',
         action="store",
         dest='filename',
+        required=False,
         type=str,
         default='')
     parser.add_argument(
         '--dataset',
         action="store",
         dest='dataset',
+        required=False,
         type=str,
         default='')
     args = parser.parse_args()
