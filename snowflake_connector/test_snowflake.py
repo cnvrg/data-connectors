@@ -98,7 +98,7 @@ class test_snowflake_connector(unittest.TestCase):
             to_df(self.snowflake_connection, self.test_cfg["query"]), pandas.core.frame.DataFrame
         )
 
-    # Test csv output - skip this test if path is set to '/cnvrg'
+    # Test csv output 
     def test_csv_output(self):
         self.assertTrue(str(type(self.pulled_csv_output)), "_csv.reader")
 
