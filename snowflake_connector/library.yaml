@@ -44,32 +44,32 @@ arguments:
   - key: 'user'
     type: 'categorical'
     values:
-       - '""'       
+       - ''       
   - key: 'account'
     type: 'categorical'
     values:
-       - '""'
+       - ''
   - key: 'warehouse'
     type: 'categorical'
     values:
-       - '""'       
+       - ''       
   - key: 'database'
     type: 'categorical'
     values:
-       - '""'
+       - ''
   - key: 'schema'
     type: 'categorical'
     values:
-       - '""'       
+       - ''       
   - key: 'password'
     type: 'categorical'
     values:
-       - '""'
+       - ''
   - key: 'query'
     type: 'categorical'
     values:
-       - '""'       
+       - ''       
   - key: 'filename'
     type: 'categorical'
     values:
-       - '""'    
+       - ''    
