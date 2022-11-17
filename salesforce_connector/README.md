@@ -1,45 +1,48 @@
-# Pulling data from SalesForce
-## _cnvrg_
+# Salesforce Connector (Library)
+The Salesforce Connector is a library that utilizes the Salesforce API to extract customer data based on user inputs. The library then stores this data as a CSV file and provides it as input to existing training and inference blueprints. A Salesforce account, its credentials, and security token are required to use this library.
 
-This connector extracts data from SalesForce based on user inputs.
+Click [here](https://github.com/cnvrg/data-connectors/tree/master/salesforce_connector) for more information on this connector.
 
-## Input
-- `column_list`: It is a list of columns from salesforce that the user wants to pull.
-    **Default Value -** <"Contact,Account,Order,Lead">
-- `entity_definition_column_list`: List of EntityDefinition columns inside the defined columns by the user.
-    **Default Value -** <"Id,Name,FirstName,LastName">
-- `limit`: Limit for the number of records to be pulled.
-    **Default Value -** None
--	`start_date`: This parameter is used to filter the _createdDate_ field on the basis of _start_date_
-    **Default Value -** 7 days before current date
--	`end_date`: This parameter is used to filter the _createdDate_ field on the basis of _end_date_
-    **Default Value -** Current date 
-## Code Flow
-- User inputs such as: **username**, **password** and  **security_token** needs to be defined in _projects>settings>environment on the cnvrg platform
-- Bulk queries for pulling data in bulk from salesforce are initiated which pulls the data which is appended to a final dataframe
-- Each iteration calls for the _data_extraction_ function:
-    - In data extraction function, an _soql_ query coupled with the _bulk_ query is initiated to pull data from salesforce
-    - Result is stored in a dataframe and returned from the function
-- The final output dataframe is generated after the data cleaning is performed based on the _fields_to_get_ key
+## Connector Flow
+The following list provides this connector's high-level flow:
+- The user inputs items such as `username`, `password` and  `security_token` in cnvrg Projects > Settings > Secrets.
+- The connector library initiates bulk queries for pulling bulk data from SalesForce, which extracts the data and appends it to a final DataFrame.
+- The connector performs each iteration, which utilizes the `data_extraction` function:
+    - A `soql` query coupled with a `bulk` query is initiated to pull data from Salesforce.
+    - The result is stored in a DataFrame and returned from the function.
+- The connector generates the final DataFrame output after it cleans the data based on the `fields_to_get` key.
 
-## Joining Tables
-- User can join multiple tables according to their requirement based on following `keys`
+## Inputs
+This library assumes the user has an existing Salesforce account. The Salesforce Connector requires the following inputs:
+- `--security_token` − Provide the security token of your Salesforce account. For security reasons, cnvrg recommends creating/updating the cnvrg Secret `????_TOKEN`. Select **Projects** > **Settings** > **Secrets** to store the Salesforce security token.
+- `--column_list` − Provide the list of columns from Salesforce to pull. Default Value: `Contact,Account,Order,Lead`.
+- `--EntityDefinition_column_list` − List the `EntityDefinition` columns inside the user-defined columns. Default Value: `Id,Name,FirstName,LastName`.
+- `--limit`− Set a limit for the number of records to be pulled. Default Value: `None`.
+- `--start_date`− Set this parameter to filter the `createdDate` field on the basis of `start_date`. Default Value: `7 days before current date`.
+- `--end_date` − Set this parameter to filter the `createdDate` field on the basis of `end_date`. Default Value: `current date`.
+- `--keys` − Join multiple tables according to your requirements based on the following `keys`:
 
-|Account |Contact |Lead |Order | 
-|---|---|---|---|
-|Account - Id |Contact - AccountId |Lead - OwnerId |Order - AccountId | 
-|Account - ParentId |Contact - OwnerId |Lead - ConvertedAccountId |Order - CreatedById |
-|Account - OwnerId |Contact - CreatedById |Lead - ConvertedContactId | |
-|Account - CreatedById | |Lead - ConvertedOpportunityId | |
-|Account - ParentId | |Lead - CreatedById | |
+  |Account |Contact |Lead |Order |
+  |---|---|---|---|
+  |Account - Id |Contact - AccountId |Lead - OwnerId |Order - AccountId |
+  |Account - ParentId |Contact - OwnerId |Lead - ConvertedAccountId |Order - CreatedById |
+  |Account - OwnerId |Contact - CreatedById |Lead - ConvertedContactId | |
+  |Account - CreatedById | |Lead - ConvertedOpportunityId | |
+  |Account - ParentId | |Lead - CreatedById | |
 
 ## Output
--   Data from EntitiyDefination columns is saved in `Name_EntityDefinition_Dataframe.csv`
--	Data from columns requested by the user is saved in `Output.csv`
+- The connector outputs `EntitiyDefination` column data and saves it in `Name_EntityDefinition_Dataframe.csv`.
+- The connector writes all files created to the default path `/cnvrg`.
+- The user (optionally) requests columns and the library stores the `output.csv` file as a new or existing cnvrg dataset.
 
-## Error Handling
--   In case the code is ran successfully, the status and the logs can be checked in the experiment tab. 
--   The code prints the job status simultaneously for each task completed
-    - when the data is pulled
-    - when the job is completed.
--  In case of an error, the experiment fails, the code gets into debug mode and the logs display the error msg.
+## Troubleshooting
+Complete one or more of the following steps to troubleshoot issues that may be encountered with this connector:
+- Confirm the `security_token` and other parameters are valid.
+- Confirm the code prints the job status simultaneously for each task completed: when the data is pulled and when the job is completed.
+- Check the Experiments > Artifacts section to confirm this connector has generated the output CSV files.
+- Check the logs (in the Experiments tab) for an error message. In the experiment fails, an error displays and cnvrg enters its Debug mode, which provides limited time to review the logs and resolve the problem.
+
+## Related Blueprints
+The Salesforce Connector can be used with the following blueprints:
+- [Churn Detection Train](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/churn-detection-train)
+- [Churn Detection Inference](https://metacloud.cloud.cnvrg.io/marketplace/blueprints/churn-detection-inference)
