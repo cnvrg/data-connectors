@@ -1,0 +1,32 @@
+title: Azure Connector
+version: 1.0.0
+description: Extracts data from Azure Containers
+icon: python
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+tags:
+  - connector
+  - training
+
+command: python3 azure_connector.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: cnvrg:v5.0
+language: python3
+
+arguments:
+  - key: container_name
+    type: 'categorical'
+    values:
+       - ''
+  - key: conn_str
+    type: 'categorical'
+    values:
+       - ''
