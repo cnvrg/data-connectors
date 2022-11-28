@@ -13,6 +13,7 @@ YAML_ARG_TO_TEST = "test_arguments"
 class TestWiki(unittest.TestCase):
     @classmethod
     def setUpClass(self) -> None:
+        ''' Function used to set up unittesting parameters '''
         # Parse the wiki page
         cfg_path = os.path.dirname(os.path.abspath(__file__))
         cfg_file = cfg_path + "/" + "test_config.yaml"
@@ -35,7 +36,7 @@ class TestWiki(unittest.TestCase):
         self.processed_text = self.wiki.get_clean_text(self.raw_text)
 
     def retrieve_first_n_lines(self, n):
-        # Pass the number of lines to compare - parameter 'n'
+        ''' Helper function used to retrieve first 'n' lines of wikipedia page content '''
         retrieved_text = self.wiki_output[0]
         lines_split = retrieved_text.lstrip(" ").rstrip(" ").split(".")
         content_lines = ''
@@ -44,35 +45,35 @@ class TestWiki(unittest.TestCase):
         return content_lines
 
     def test_return_type_list(self):
-        # Checks if the 'get_wiki_page' function returns list
+        ''' Checks return type of the 'get_wiki_page' function '''
         self.assertIsInstance(
             self.wiki_output, list
         )
 
     def test_str_return_type(self):
-        # Checks if the list object type is string
+        ''' Checks the list object type '''
         self.assertIsInstance(
             self.wiki_output[0], str
         )
 
     def test_output_length(self):
-        # Checks if the get_wiki_page function returns an output list with length 2
+        ''' Checks the output length '''
         self.assertEqual(
             len(self.wiki_output), 2
         )
 
     def test_text_content(self):
-        # Checks the content validity for first five lines - from the actual wikipedia page
+        ''' Checks the validity of the content pulled from wikipedia page for the first 5 lines '''
         self.assertEqual(
             self.retrieve_first_n_lines(5), self.test_cfg["content_val"]
         )
 
     def test_return_type_str(self):
-        # Checks if the 'get_clean_text' function returns string
+        ''' Checks return type of 'get_clean_text' function '''
         self.assertIsInstance(self.processed_text, str)
 
     def test_get_clean_text(self):
-        # Checks the functionality of 'get_clean_text'
+        ''' Checks the cleaned output of 'get_clean_text' function '''
         self.assertEqual(
             self.wiki.get_clean_text(self.test_cfg["get_clean_text_input"]), 
             self.test_cfg["get_clean_text_output"]
