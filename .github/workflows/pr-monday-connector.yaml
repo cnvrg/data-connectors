@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-      - pipeline-test
+      - add-unittests
     paths: 
       - ${TEST_DIRECTORY}/**
       
