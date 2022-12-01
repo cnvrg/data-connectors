@@ -5,6 +5,7 @@ import argparse
 from azure.storage.blob import ContentSettings, ContainerClient
 import logging
 
+
 class azure:
     def __init__(self, args, container_name=None):
         """
@@ -19,16 +20,18 @@ class azure:
         self.account_url = args.account_url
         self.conn_str = args.conn_str
         try:
-            self.conn_str = os.environ['CONN_STRING']
+            self.conn_str = os.environ["CONN_STRING"]
         except KeyError:
-            logging.info("Connection string is not provided in the environment keys")  
-            
+            logging.info("Connection string is not provided in the environment keys")
+
         if self.account_url is None:
             self.containerservice = ContainerClient.from_connection_string(
                 conn_str=self.conn_str, container_name=self.container_name
             )
         else:
-            self.containerservice = ContainerClient(account_url=self.account_url, container_name=self.container_name)
+            self.containerservice = ContainerClient(
+                account_url=self.account_url, container_name=self.container_name
+            )
         self.all_blobs = []
 
     def save_blob(self, file_name):
@@ -55,6 +58,14 @@ class azure:
 # args
 def argument_parser():
     parser = argparse.ArgumentParser(description="""Creator""")
+    parser.add_argument(
+        "--store",
+        action="store",
+        dest="store",
+        required=False,
+        default="True",
+        help="""True or False depending on whether you want to store data as cnvrg dataset""",
+    )
     parser.add_argument(
         "--container_name",
         action="store",
@@ -90,12 +101,20 @@ def save_to_cnvrg(files_list):
     ds.put_files(paths=files_list)
 
 
+def validation(args):
+    assert (
+        args.store.lower() != "true" or args.store.lower() != "false"
+    ), "Invalid argument passed for store argument, it must be set to true or false."
+
+
 # main
 def main():
     args = argument_parser()
+    validation(args)
     azure_downloader = azure(args)
     azure_downloader.download_all_blobs_in_container()
-    save_to_cnvrg(azure_downloader.all_blobs)
+    if str(args.store.lower()) == "true":
+        save_to_cnvrg(azure_downloader.all_blobs)
 
 
 if __name__ == "__main__":
