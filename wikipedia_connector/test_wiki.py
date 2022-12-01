@@ -1,8 +1,10 @@
 import unittest
-import os
-from wiki import WikiPage
+import wikipedia
+import os, shutil
+from wiki import WikiPage, wiki_main, parse_topic
 from bs4 import BeautifulSoup
 import urllib.request
+from urllib.error import HTTPError
 from urllib.request import urlopen
 from wiki import WikiPage
 import yaml
@@ -34,6 +36,19 @@ class TestWiki(unittest.TestCase):
         # Setup for testing 'get_wiki_page' and 'get_clean_text' functions
         self.wiki_output = self.wiki.get_wiki_page(str(self.test_cfg["page"]))
         self.processed_text = self.wiki.get_clean_text(self.raw_text)
+
+        # Make a Unit-testing data directory    
+        self.unittest_dir = "unit_test_data"
+        self.local_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_path = os.path.join(self.local_dir, self.unittest_dir)
+        os.mkdir(self.data_path)
+
+        # Parsing incorrect arguments
+        self.incorrect_flag, self.incorrect_topics = parse_topic(str(self.test_cfg["blank_page"]))
+
+    @classmethod
+    def tearDownClass(self):
+        shutil.rmtree(self.data_path)
 
     def retrieve_first_n_lines(self, n):
         ''' Helper function used to retrieve first 'n' lines of wikipedia page content '''
@@ -77,6 +92,12 @@ class TestWiki(unittest.TestCase):
         self.assertEqual(
             self.wiki.get_clean_text(self.test_cfg["get_clean_text_input"]), 
             self.test_cfg["get_clean_text_output"]
+        )
+
+    def test_wiki_page_exception(self):
+        ''' Checks the wikipedia page exception '''
+        self.assertRaises(
+            wikipedia.exceptions.WikipediaException, wiki_main, self.incorrect_flag, self.incorrect_topics, self.data_path
         )
 
 if __name__ == "__main__":

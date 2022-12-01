@@ -82,32 +82,16 @@ class WikiPage:
         text = re.sub(r'[^\x00-\x7F]+',' ', text)
         return text
 
-
-def wiki_main():
-    parser = argparse.ArgumentParser(description="""Preprocessor""")
-    parser.add_argument('-f','--topics', action='store', dest='topics', default="table,chalk,starcraft,predator", required=True, help="""wikipedia topics""")
-    parser.add_argument('--project_dir', action='store', dest='project_dir',
-                        help="""--- For inner use of cnvrg.io ---""")
-    parser.add_argument('--output_dir', action='store', dest='output_dir',
-                        help="""--- For inner use of cnvrg.io ---""")
-    parser.add_argument(        "--local_dir",
-        action="store",
-        dest="local_dir",
-        required=False,
-        default=cnvrg_workdir,
-        help="""--- The path to save the dataset file to ---""",)
-    
-    args = parser.parse_args()
-    topic = args.topics
-    file_dir = args.local_dir
+def parse_topic(topic):
     if topic.endswith(".csv"):
         topics = pd.read_csv(topic)
         flag_0 = "dataframe"
     else:
         topics = topic.split(",")
         flag_0 = "list"
+    return flag_0, topics
 
-
+def wiki_main(flag_0, topics, file_dir):
     try:
         if flag_0 == "dataframe":
             input_list = []
@@ -134,7 +118,7 @@ def wiki_main():
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
             output_summaries_file = "wiki_output.csv"
             df1.to_csv(file_dir+"/{}".format(output_summaries_file), index=False)
-        else:
+        elif flag_0 == "list":
             input_list = []
             list2 = []
             disambiguation = 0
@@ -153,6 +137,25 @@ def wiki_main():
 
     except (wikipedia.exceptions.PageError, wikipedia.exceptions.WikipediaException,urllib.error.HTTPError):
         print('Does not match any page. Try another ID next time')
+        raise
 
 if __name__ == '__main__':
-    wiki_main()
+    parser = argparse.ArgumentParser(description="""Preprocessor""")
+    parser.add_argument('-f','--topics', action='store', dest='topics', default="table,chalk,starcraft,predator", required=True, help="""wikipedia topics""")
+    parser.add_argument('--project_dir', action='store', dest='project_dir',
+                        help="""--- For inner use of cnvrg.io ---""")
+    parser.add_argument('--output_dir', action='store', dest='output_dir',
+                        help="""--- For inner use of cnvrg.io ---""")
+    parser.add_argument(        "--local_dir",
+        action="store",
+        dest="local_dir",
+        required=False,
+        default=cnvrg_workdir,
+        help="""--- The path to save the dataset file to ---""",)
+    
+    args = parser.parse_args()
+    topic = args.topics
+    file_dir = args.local_dir
+
+    flag_0, topics = parse_topic(topic)
+    wiki_main(flag_0, topics, file_dir)
