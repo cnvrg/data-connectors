@@ -46,13 +46,29 @@ class TestWiki(unittest.TestCase):
         # Parsing incorrect arguments
         self.incorrect_flag, self.incorrect_topics = parse_topic(str(self.test_cfg["blank_page"]))
 
+        # Create a dataframe for topics
+        self.data = {
+            "Wikipedia_page_title": [str(self.test_cfg["page"])]
+        }
+        self.unittest_dataframe = pandas.DataFrame(self.data)
+        self.unittest_dataframe.to_csv(self.data_path + '/' + 'unittest_data.csv', header=False, index=False)
+
+        # Parsing the parameters for providing .csv as input 
+        self.flag, self.topics = parse_topic(str(self.test_cfg["page"]))
+        self.df_output_file_name = 'dataframe_output.csv'
+        wiki_main(self.flag, self.topics, self.data_path, self.df_output_file_name)
+
+        # Read the output csv file into pandas dataframe for .csv input
+        self.dataframe_output_df = pandas.read_csv(self.data_path + '/' + self.df_output_file_name)
+    
     @classmethod
     def tearDownClass(self):
+        ''' Clears the temporary dataset directory '''
         shutil.rmtree(self.data_path)
 
-    def retrieve_first_n_lines(self, n):
+    def retrieve_first_n_lines(self, n, text):
         ''' Helper function used to retrieve first 'n' lines of wikipedia page content '''
-        retrieved_text = self.wiki_output[0]
+        retrieved_text = text
         lines_split = retrieved_text.lstrip(" ").rstrip(" ").split(".")
         content_lines = ''
         for i in range(n):
@@ -80,7 +96,7 @@ class TestWiki(unittest.TestCase):
     def test_text_content(self):
         ''' Checks the validity of the content pulled from wikipedia page for the first 5 lines '''
         self.assertEqual(
-            self.retrieve_first_n_lines(5), self.test_cfg["content_val"]
+            self.retrieve_first_n_lines(5, self.wiki_output[0]), self.test_cfg["content_val"]
         )
 
     def test_return_type_str(self):
@@ -97,7 +113,22 @@ class TestWiki(unittest.TestCase):
     def test_wiki_page_exception(self):
         ''' Checks the wikipedia page exception '''
         self.assertRaises(
-            wikipedia.exceptions.WikipediaException, wiki_main, self.incorrect_flag, self.incorrect_topics, self.data_path
+            wikipedia.exceptions.WikipediaException, wiki_main, self.incorrect_flag, self.incorrect_topics, self.data_path, self.df_output_file_name
+        )
+
+    def test_csv_output(self):
+        ''' Checks if wikipedia page is pulled into and stored as a csv file '''
+        self.assertTrue(
+            os.path.isfile(self.data_path + '/' + 'dataframe_output.csv')
+        )
+
+    def test_csv_content(self):
+        ''' Checks the wikipedia content pulled '''
+        self.assertEqual(
+            str(self.dataframe_output_df['title'][0]), str(self.test_cfg["page"])
+        )
+        self.assertEqual(
+            self.retrieve_first_n_lines(5, str(self.dataframe_output_df['text'][0])), self.test_cfg["content_val"]
         )
 
 if __name__ == "__main__":

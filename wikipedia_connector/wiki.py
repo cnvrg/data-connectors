@@ -91,7 +91,7 @@ def parse_topic(topic):
         flag_0 = "list"
     return flag_0, topics
 
-def wiki_main(flag_0, topics, file_dir):
+def wiki_main(flag_0, topics, file_dir, output_summaries_file):
     try:
         if flag_0 == "dataframe":
             input_list = []
@@ -116,7 +116,6 @@ def wiki_main(flag_0, topics, file_dir):
             #lst2 = ['x'] * len(input_list)
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
-            output_summaries_file = "wiki_output.csv"
             df1.to_csv(file_dir+"/{}".format(output_summaries_file), index=False)
         elif flag_0 == "list":
             input_list = []
@@ -132,7 +131,6 @@ def wiki_main(flag_0, topics, file_dir):
             #lst2 = ['x'] * len(input_list)
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
-            output_summaries_file = "wiki_output.csv"
             df1.to_csv(file_dir+"/{}".format(output_summaries_file), index=False)
 
     except (wikipedia.exceptions.PageError, wikipedia.exceptions.WikipediaException,urllib.error.HTTPError):
@@ -151,11 +149,18 @@ if __name__ == '__main__':
         dest="local_dir",
         required=False,
         default=cnvrg_workdir,
-        help="""--- The path to save the dataset file to ---""",)
+        help="""--- The path to save the dataset file to ---""")
+    parser.add_argument(        "--output_file_name",
+        action="store",
+        dest="output_file_name",
+        required=False,
+        default="wiki_output.csv",
+        help="""--- The path to save the dataset file to ---""")
     
     args = parser.parse_args()
     topic = args.topics
     file_dir = args.local_dir
+    output_summaries_file = args.output_file_name
 
     flag_0, topics = parse_topic(topic)
-    wiki_main(flag_0, topics, file_dir)
+    wiki_main(flag_0, topics, file_dir, output_summaries_file)
