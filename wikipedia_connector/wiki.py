@@ -112,7 +112,7 @@ def wiki_main(flag_0, topics, file_dir, output_summaries_file):
                     input_list.append(abc22)
                     if(abc2.get_wiki_page(str(topics.columns.values[j]))[1] == '1'):
                         disambiguation = disambiguation + 1
-                    list2.append(str(topics[i]))
+                    list2.append(str(topics.columns.values[j]))
             #lst2 = ['x'] * len(input_list)
             df1 = pd.DataFrame(list(zip(input_list, list2)), columns =['text', 'title'])
             print('There were ' + str(disambiguation) + ' ambigious values in the input list')
