@@ -1,0 +1,5 @@
+test_arguments:
+  custom_query: 'select a.id, a.name, a.dept, a.salary, a.mentorid, a.isdisabled, a.joindate, b.mentordept, b.mentorexp from Employees a inner join Mentors b on a.mentorid = b.mentorid'
+  host: 'sql12.freemysqlhosting.net'
+  pwd: 'tWWVADjmfA'
+  user: 'sql12554733'

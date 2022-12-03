@@ -1,0 +1,11 @@
+test_arguments:
+  tables_views: 'Employees,Mentors"!"temp_employee'
+  tables_columns_filters: 'Geralt,Irenicus,Marine,Ranger"!"Maths,Biology"!"">"1000,"<"2000,OR"|"1,2'
+  tables_views_columns: 'None'
+  columns_to_filter: 'id,salary"|"mentordept,mentorid"!"id,joindate'
+  j: '0' #first table
+  i : '0' #first database
+  host: 'sql12.freemysqlhosting.net'
+  pwd: 'tWWVADjmfA'
+  user: 'sql12554733'
+  database : 'sql12554733'
