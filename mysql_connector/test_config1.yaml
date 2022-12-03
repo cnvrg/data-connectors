@@ -1,0 +1,11 @@
+test_arguments:
+  tables_views: 'Employees,Mentors"!"temp_employee'
+  tables_columns_filters: 'None'
+  tables_views_columns: 'name,dept,salary"|"mentorid"!"dept,joindate'
+  columns_to_filter: 'id,salary"|"mentordept,mentorid"!"id,joindate'
+  j: '1' #first table
+  i : '0' #first database
+  host: 'sql12.freemysqlhosting.net'
+  pwd: 'tWWVADjmfA'
+  user: 'sql12554733'
+  database : 'sql12554733'

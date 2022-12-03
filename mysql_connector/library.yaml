@@ -1,0 +1,58 @@
+title: MySQL Connector
+version: 1.0.0
+description: Extract tables and views from MySQL instance via credentials
+icon: python
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+tags:
+  - training
+  - connector
+
+command: python3 mysql_connector.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: python:3.8
+
+language: python3
+
+arguments:
+  - key: 'credentials'
+    type: 'categorical'
+    values:
+      - "yourcreds"
+  - key: 'databases'
+    type: 'categorical'
+    values:
+      - 'sql9578677'
+  - key: 'tables_views'
+    type: 'categorical'
+    values:
+      - 'Employees,Mentors"!"temp_employee'
+  - key: 'tables_views_columns'
+    type: 'categorical'
+    values:
+      - 'name,dept,salary"|"mentorid"!"dept,joindate'
+  - key: 'tables_columns_filters'
+    type: 'categorical'
+    values:
+      - 'Geralt,Irenicus,Marine,Ranger"!"Maths,Biology"!"">"1000,"<"2000,AND"|"1,2'
+  - key: 'views_columns_filters'
+    type: 'categorical'
+    values:
+      - 'Chemistry"!""<"1984-01-01,">"1985-01-01'
+  - key: 'custom_query'
+    type: 'categorical'
+    values:
+      - 'None'
+  - key: 'columns_to_filter'
+    type: 'categorical'
+    values:
+      - 'id,salary"|"mentordept,mentorid"!"id,joindate'
+
