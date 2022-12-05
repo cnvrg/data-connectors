@@ -29,4 +29,3 @@ jobs:
       - name: Execute unit tests
         run: |
           find ./${TEST_DIRECTORY} -name unittest*.py -exec python3 {} +
-          
