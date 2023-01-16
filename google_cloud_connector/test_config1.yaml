@@ -1,0 +1,4 @@
+test_arguments:
+  folders: 'all'
+  bucket: 'gildesh_192'
+  credential_file : 'google_cloud/arctic-idiom-370706-07692fc76fd5.json'

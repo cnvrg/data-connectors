@@ -1,0 +1,37 @@
+title: Google Cloud Connector
+version: 1.0.0
+description: Extracts data in the form of files and folders from Google Cloud Storage
+icon: python
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+tags:
+  - training
+  - connector
+
+command: python3 gcs.py
+
+requirements:
+  cpu: 3.5
+  memory: 8
+  gpu: 0
+  hpu: 0
+
+image: python:3.8
+
+language: python3
+
+arguments:
+  - key: 'bucket_name'
+    type: 'categorical'
+    values:
+      - "gildesh_192"
+  - key: 'folder_names'
+    type: 'categorical'
+    values:
+      - "pose,churn"
+  - key: 'cnvrg_dataset_name'
+    type: 'categorical'
+    values:
+      - 'testing'
