@@ -1,9 +1,10 @@
 import os
-#from cnvrgv2 import Cnvrg
+from cnvrgv2 import Cnvrg
 import shutil
 from google.cloud import storage
 import argparse
 import pathlib
+import itertools
 def argument_parser():
     parser = argparse.ArgumentParser(description="""Creator""")
     parser.add_argument(
@@ -65,8 +66,13 @@ class Download_Bucket():
          for blob1 in blob for dest_file_name in filename_collection]
 
 def save_to_cnvrg(files_list,storage_name,ds):
+    print('Saving to cnvrg running')
     cnvrg = Cnvrg()
     ds_name = storage_name
+    print(storage_name)
+    print('list of files is below')
+    print(files_list)
+    ds = cnvrg.datasets.create(name=ds_name)    
     ds.put_files(paths=files_list)
 
 def main():
@@ -80,9 +86,13 @@ def main():
     list_of_all_files = gcp.file_name_compilation()
     path = '/cnvrg'
     gcp.file_saving(list_of_all_files, path)
-    #if args.cnvrg_dataset_name != 'None':
-    #    ds = cnvrg.datasets.create(name=ds_name)
-    #    save_to_cnvrg([x for x in args.folder_names.split[',']],args.cnvrg_dataset_name,ds)
+    cnvrge = Cnvrg()
+    if args.cnvrg_dataset_name != 'None':
+        print('Cnvrg Dataset Code Running')
+        ds = cnvrge.datasets.create(name=args.cnvrg_dataset_name)
+        file_string = list(itertools.chain.from_iterable(list_of_all_files))
+        file_string = ['/cnvrg/'+x for x in file_string]
+        save_to_cnvrg(file_string,args.cnvrg_dataset_name,ds)
 
 if __name__== "__main__":
     main()
