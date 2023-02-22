@@ -93,4 +93,4 @@ class FileError(TestPlos):
 
 
     def __str__(self):
-        return "FileError: File not downloaded correctly "
+        return "FileError: File not downloaded correctly, please check input parameters "
