@@ -15,15 +15,17 @@ class TestPlos(unittest.TestCase):
 
 class UrlError(TestPlos):
     def test_url(self):
-        """Checks if the function returns a float value"""
+        """Checks if the URL is valid """
+        
+        # Provide invalid url
         invalid_url = "https://journals.plos.org/invalid-url"
-        # Send an HTTP GET request to the PLOS website with the Accept header set to "application/pdf"
-        headers = {"Accept": "application/pdf"}
-        response = requests.get(invalid_url, headers=headers)
 
-        # Check if the response was successful (HTTP status code 200)
+        
+        response = download_journals(invalid_url, self.filename) 
+
+        # Check for status code
         assert response.status_code == 200
-
+        
         # Check if the downloaded file exists
         assert os.path.exists(self.filename)
 
@@ -35,6 +37,8 @@ class UrlError(TestPlos):
 
 class HeaderError(TestPlos):
     def test_header(self):
+        """Checks if the header is correct"""
+
         # Send an HTTP GET request to the PLOS website without the Accept header
         response = requests.get(self.url)
 
@@ -52,6 +56,8 @@ class HeaderError(TestPlos):
 
 class NetworkError(TestPlos):
     def test_network(self):
+        """Checks for network error"""
+
         headers = {"Accept": "application/pdf"}
         # Send an HTTP GET request to the PLOS website without the Accept header
         with requests_mock.Mocker() as m:
@@ -74,16 +80,13 @@ class NetworkError(TestPlos):
 
 class FileError(TestPlos):
     def test_file(self):
-        headers = {"Accept": "application/pdf"}
+        """Checks if file was downloaded correctly"""
+        
+        response = download_journals(self.url, self.filename)
 
-        response = requests.get(self.url, headers=headers)
-
-        # Check if the response was successful (HTTP status code 200)
+        # Check for status code
         assert response.status_code == 200
-
-        # Save the response content to a file with the custom filename
-        with open(self.filename, "wb") as f:
-            f.write(response.content)
+        
         # Test that the file was downloaded and saved to disk with the correct filename
         assert os.path.exists(self.filename)
         assert os.path.isfile(self.filename)
