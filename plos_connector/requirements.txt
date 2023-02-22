@@ -1,2 +1,2 @@
-requests
-cnvrgv2
+requests==2.28.1
+cnvrgv2==1.0.25
