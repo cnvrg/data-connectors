@@ -75,8 +75,8 @@ def download_journals(urls, filenames=None):
         
     
     Args:
-            urls: string representing unique url(s) for journals to be downloaded
-            filenames: string representing names of the files to be provided for downloaded journals
+            urls: list of strings representing unique url(s) for journals to be downloaded
+            filenames: list of strings representing names of the files to be provided for downloaded journals
 
     Downloads:
             Journals in pdf format
