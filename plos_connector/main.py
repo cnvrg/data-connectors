@@ -114,7 +114,7 @@ def download_journals(urls, filenames=None):
             raise InvalidUrlError()
             
             
-        return response.status_code
+        return response
         
 
         
@@ -131,7 +131,7 @@ def main():
     filenames = ["journal1.pdf", "journal2.pdf", "journal3.pdf"]
     """
     
-    response_status = download_journals(args.urls, args.filenames)
+    response = download_journals(args.urls, args.filenames)
 
 
 if __name__ == "__main__":
