@@ -1,0 +1,48 @@
+---
+title: Plos Connector
+description: "Download articles from PLOS"
+icon: python
+version: 1.0.1
+
+author: "cnvrg"
+author_email: "info@cnvrg.io"
+
+
+tags:
+  - connector
+  - data
+
+
+command: python main.py
+
+requirements:
+  cpu: 2
+  memory: 2
+  gpu: 0
+  hpu: 0
+
+image: python:3.8
+
+
+language: python3
+
+arguments:
+  - key: urls
+    type: categorical
+    values: []
+  - key: filenames
+    type: categorical
+    values: 
+      - "j.pdf"
+  - key: cnvrg_dataset
+    type: categorical
+    values: 
+      - None
+  - key: local_dir
+    type: categorical
+    values: 
+      - cnvrg_workdir
+
+
+
+
