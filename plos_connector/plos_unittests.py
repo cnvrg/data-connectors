@@ -28,10 +28,10 @@ class UrlError(TestPlos):
         response = download_journals(self.invalid_url, self.filename) 
 
         # Check for status code
-        assert response.status_code == 200
+        self.assertEqual(response.status_code, 200)
         
         # Check if the downloaded file exists
-        assert os.path.exists(self.filename)
+        self.assertTrue(os.path.exists(self.filename))
 
     def __str__(self):
         return "UrlError: Invalid URL, please provide URL that leads to a downloadable PDF "
@@ -47,10 +47,10 @@ class HeaderError(TestPlos):
         response = requests.get(self.url1)
 
         # Check if the response was successful (HTTP status code 200)
-        assert response.status_code == 200
+        self.assertEqual(response.status_code, 200)
 
         # Test that the response content is a PDF file
-        assert response.headers["Content-Type"] == "application/pdf"
+        self.assertEqual(response.headers["Content-Type"], "application/pdf")
 
 
     def __str__(self):
@@ -70,7 +70,7 @@ class NetworkError(TestPlos):
             response = requests.get(self.url1, headers=headers)
 
             # Check if the response was successful (HTTP status code not 200)
-            assert response.status_code == 200
+            self.assertEqual(response.status_code, 200)
 
 
 
@@ -89,16 +89,16 @@ class FileError(TestPlos):
         response2 = download_journals(self.testurl2, self.testfilename2)
 
         # Check for status code
-        assert response1.status_code == 200
-        assert response2.status_code == 200
+        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(response2.status_code, 200)
         
         
         # Test that the file was downloaded and saved to disk with the correct filename
-        assert os.path.exists(self.testfilename1)
-        assert os.path.isfile(self.testfilename1)
+        self.assertTrue(os.path.exists(self.testfilename1))
+        self.assertTrue(os.path.isfile(self.testfilename1))
         
-        assert os.path.exists(self.testfilename2)
-        assert os.path.isfile(self.testfilename2)
+        self.assertTrue(os.path.exists(self.testfilename2))
+        self.assertTrue(os.path.isfile(self.testfilename2))
 
 
 
