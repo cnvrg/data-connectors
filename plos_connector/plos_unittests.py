@@ -2,6 +2,7 @@ import requests
 import requests_mock
 import unittest
 from plos_main import *
+import yaml
 
 
 class TestPlos(unittest.TestCase):
