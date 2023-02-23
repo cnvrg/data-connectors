@@ -1,0 +1,6 @@
+url1 :      ["https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231478&type=printable"]
+filename1 : ["j.pdf"]
+url2 :      ["https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231476&type=printable",
+             "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231477&type=printable",
+             "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231478&type=printable"]
+filename2 : ["journal1.pdf", "journal2.pdf", "journal3.pdf"]
