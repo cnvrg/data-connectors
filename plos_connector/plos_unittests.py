@@ -7,21 +7,25 @@ from plos_main import *
 class TestPlos(unittest.TestCase):
     def setUp(self):
         """Overrides setUp from unittest to get dataset for unit testing"""
+        
+         with open("./config_params.yaml", "r") as file:
+            config = yaml.load(file, Loader=yaml.FullLoader)
 
-        self.url = "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231476&type=printable"
-        self.filename = "test_filename.pdf"
+        # Define paths from config file 
+
+        self.testurl1 = config["url1"]
+        self.testfilename1 = config["filename1"]
+        self.testurl2 = config["url2"]
+        self.testfilename2 = config["filename2"]
+        self.invalid_url = config["invalid_url"]
 
 
 
 class UrlError(TestPlos):
     def test_url(self):
         """Checks if the URL is valid """
-        
-        # Provide invalid url
-        invalid_url = "https://journals.plos.org/invalid-url"
-
-        
-        response = download_journals(invalid_url, self.filename) 
+                      
+        response = download_journals(self.invalid_url, self.filename) 
 
         # Check for status code
         assert response.status_code == 200
@@ -40,7 +44,7 @@ class HeaderError(TestPlos):
         """Checks if the header is correct"""
 
         # Send an HTTP GET request to the PLOS website without the Accept header
-        response = requests.get(self.url)
+        response = requests.get(self.url1)
 
         # Check if the response was successful (HTTP status code 200)
         assert response.status_code == 200
@@ -63,7 +67,7 @@ class NetworkError(TestPlos):
         with requests_mock.Mocker() as m:
             m.get(self.url, exc=requests.exceptions.ConnectTimeout)
 
-            response = requests.get(self.url, headers=headers)
+            response = requests.get(self.url1, headers=headers)
 
             # Check if the response was successful (HTTP status code not 200)
             assert response.status_code == 200
@@ -80,14 +84,22 @@ class FileError(TestPlos):
     def test_file(self):
         """Checks if file was downloaded correctly"""
         
-        response = download_journals(self.url, self.filename)
+        response1 = download_journals(self.testurl1, self.testfilename1)
+        
+        response2 = download_journals(self.testurl2, self.testfilename2)
 
         # Check for status code
-        assert response.status_code == 200
+        assert response1.status_code == 200
+        assert response2.status_code == 200
+        
         
         # Test that the file was downloaded and saved to disk with the correct filename
-        assert os.path.exists(self.filename)
-        assert os.path.isfile(self.filename)
+        assert os.path.exists(self.testfilename1)
+        assert os.path.isfile(self.testfilename1)
+        
+        assert os.path.exists(self.testfilename2)
+        assert os.path.isfile(self.testfilename2)
+
 
 
     def __str__(self):
