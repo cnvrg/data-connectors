@@ -8,7 +8,7 @@ class TestPlos(unittest.TestCase):
     def setUp(self):
         """Overrides setUp from unittest to get dataset for unit testing"""
         
-         with open("./config_params.yaml", "r") as file:
+        with open("./config_params.yaml", "r") as file:
             config = yaml.load(file, Loader=yaml.FullLoader)
 
         # Define paths from config file 
@@ -20,6 +20,26 @@ class TestPlos(unittest.TestCase):
         self.invalid_url = config["invalid_url"]
 
 
+        
+class TestExceptions(TestPlos):
+    
+    def test_url_error(self):
+        """Checks if URL is correct"""
+        with self.assertRaises(InvalidUrlError):
+            download_journals(self.invalid_url, self.testfilename1)
+        with self.assertRaises(InvalidUrlError):
+            download_journals(self.testurl1, self.testfilename1)
+    
+    def test_value_mismatch_error(self):
+        """Checks to see if number of urls and filenames match"""
+        with self.assertRaises(ValueMismatchError):
+            download_journals(self.testurl1, self.testfilename1)
+        with self.assertRaises(ValueMismatchError):
+            download_journals(self.testurl1, self.testfilename2)
+        with self.assertRaises(ValueMismatchError):
+            download_journals(self.testurl2, self.testfilename1)
+
+            
 
 class UrlError(TestPlos):
     def test_url(self):
