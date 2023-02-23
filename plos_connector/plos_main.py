@@ -121,16 +121,7 @@ def download_journals(urls, filenames=None):
 
 def main():
     args = get_parameters()
-    
-    """ testing
-    urls = [
-    "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231476&type=printable",
-    "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231477&type=printable",
-    "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0231478&type=printable",
-    ]
-    filenames = ["journal1.pdf", "journal2.pdf", "journal3.pdf"]
-    """
-    
+     
     response = download_journals(args.urls, args.filenames)
 
 
