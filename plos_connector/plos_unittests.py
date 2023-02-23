@@ -1,7 +1,7 @@
 import requests
 import requests_mock
 import unittest
-from main import *
+from plos_main import *
 
 
 class TestPlos(unittest.TestCase):
