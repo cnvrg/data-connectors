@@ -91,7 +91,7 @@ def download_journals(urls, filenames=None):
         response = requests.get(url, headers=headers)
 
         # Check if the response was successful (HTTP status code 200)
-        if response.status_code == 200:
+        if response.status_code < 400:
             # Extract the filename from the Content-Disposition header, if available
             if "Content-Disposition" in response.headers:
                 default_filename = (
