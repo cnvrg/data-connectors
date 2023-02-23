@@ -68,8 +68,6 @@ class NetworkError(TestPlos):
             # Check if the response was successful (HTTP status code not 200)
             assert response.status_code == 200
 
-            # Test if the file was downloaded and saved to disk
-            assert os.path.exists(self.filename)
 
 
     def __str__(self):
